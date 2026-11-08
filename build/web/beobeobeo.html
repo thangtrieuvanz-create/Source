@@ -1,0 +1,1840 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tấm Thẻ Cứu Cánh Cho Em - Spooky Halloween Edition 🎃👻</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Quicksand:wght@500;600;700;800&family=Cinzel+Decorative:wght@700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            /* Palette: Spooky Cute Halloween Night */
+            --bg-top: #0a0512;
+            --bg-mid: #150a26;
+            --bg-bottom: #08030f;
+            --card-bg: #1c1230;
+            --card-bg-hover: #261742;
+            
+            /* Primary & Halloween Accents */
+            --pumpkin-orange: #FF7518;
+            --pumpkin-hover: #FF8F3D;
+            --pumpkin-glow: rgba(255, 117, 24, 0.55);
+
+            --spooky-purple: #9D4EDD;
+            --spooky-purple-dark: #5A189A;
+            --purple-hover: #B76EFA;
+            --purple-glow: rgba(157, 78, 221, 0.5);
+
+            --witch-green: #00E676;
+            --witch-green-hover: #33FF99;
+            --witch-glow: rgba(0, 230, 118, 0.45);
+
+            --candle-gold: #FFB703;
+            --candy-pink: #FF4081;
+            --blood-red: #E63946;
+
+            /* Text & Borders */
+            --text-heading: #FFA500;
+            --text-main: #F5EEFD;
+            --text-muted: #BCA8DA;
+            --voucher-border: rgba(255, 117, 24, 0.35);
+            --card-shadow: 0 10px 28px rgba(0, 0, 0, 0.65), 0 0 20px rgba(157, 78, 221, 0.2);
+            --card-shadow-hover: 0 18px 40px rgba(0, 0, 0, 0.85), 0 0 28px rgba(255, 117, 24, 0.5), 0 0 15px rgba(157, 78, 221, 0.4);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Quicksand', sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at 50% 15%, var(--bg-mid) 0%, var(--bg-top) 55%, var(--bg-bottom) 100%);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 3rem 1rem 4rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Canvas linh hồn & dơi Halloween bay lượn */
+        #halloweenCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Container nội dung chính */
+        .page-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 1100px;
+        }
+
+        /* Dải đèn bí ngô & dơi trang trí đầu trang */
+        .garland {
+            font-size: 1.6rem;
+            letter-spacing: 0.8rem;
+            margin-bottom: 0.8rem;
+            opacity: 0.9;
+            user-select: none;
+            animation: pumpkinFlicker 2.8s ease-in-out infinite alternate;
+        }
+
+        @keyframes pumpkinFlicker {
+            0% { filter: drop-shadow(0 0 4px rgba(255, 117, 24, 0.3)); opacity: 0.8; }
+            45% { filter: drop-shadow(0 0 14px rgba(255, 117, 24, 0.95)) drop-shadow(0 0 25px rgba(157, 78, 221, 0.6)); opacity: 1; }
+            70% { filter: drop-shadow(0 0 6px rgba(255, 183, 3, 0.5)); opacity: 0.88; }
+            100% { filter: drop-shadow(0 0 18px rgba(255, 117, 24, 1)) drop-shadow(0 0 30px rgba(0, 230, 118, 0.6)); opacity: 1; }
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2.8rem;
+            position: relative;
+        }
+
+        h1.main-title {
+            color: var(--text-heading);
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.6rem;
+            position: relative;
+            display: inline-block;
+            text-shadow: 0 0 15px rgba(255, 117, 24, 0.6), 0 3px 6px rgba(0, 0, 0, 0.8);
+            letter-spacing: 0.5px;
+        }
+
+        /* Chiếc mũ phù thủy bay lắc lư trên chữ đầu */
+        .witch-hat {
+            position: absolute;
+            top: -24px;
+            left: -20px;
+            font-size: 2.2rem;
+            transform: rotate(-18deg);
+            display: inline-block;
+            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.6)) drop-shadow(0 0 8px rgba(157, 78, 221, 0.7));
+            animation: witchHatWiggle 3.5s ease-in-out infinite;
+        }
+
+        @keyframes witchHatWiggle {
+            0%, 100% { transform: rotate(-18deg) scale(1); }
+            50% { transform: rotate(-8deg) scale(1.12); }
+        }
+
+        p.subtitle {
+            font-size: 1.18rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            letter-spacing: 0.4px;
+        }
+
+        .subtitle .spooky-badge {
+            display: inline-block;
+            background: rgba(157, 78, 221, 0.18);
+            color: #FFB703;
+            padding: 5px 16px;
+            border-radius: 20px;
+            margin-top: 8px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            border: 1px solid rgba(255, 117, 24, 0.4);
+            box-shadow: 0 0 12px rgba(255, 117, 24, 0.25);
+            text-shadow: 0 0 8px rgba(255, 183, 3, 0.4);
+        }
+
+        /* Danh sách thẻ Voucher */
+        .voucher-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.8rem;
+            justify-content: center;
+            max-width: 1050px;
+            width: 100%;
+        }
+
+        /* Voucher Card Halloween */
+        .voucher-card {
+            background: linear-gradient(160deg, #24163d 0%, #170d29 100%);
+            width: 280px;
+            border-radius: 22px;
+            padding: 2.2rem 1.6rem 1.8rem;
+            text-align: center;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s ease, border-color 0.35s ease, background 0.35s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border: 2px dashed var(--voucher-border);
+            position: relative;
+            overflow: visible;
+        }
+
+        .voucher-card:hover {
+            transform: translateY(-8px);
+            background: linear-gradient(160deg, #2e1c4e 0%, #1e1136 100%);
+            box-shadow: var(--card-shadow-hover);
+            border-color: var(--pumpkin-orange);
+        }
+
+        /* Mạng nhện và nhện đung đưa ở góc trên thẻ */
+        .spider-web-corner {
+            position: absolute;
+            top: -6px;
+            left: 10px;
+            font-size: 1.6rem;
+            user-select: none;
+            pointer-events: none;
+            filter: drop-shadow(0 0 5px rgba(255, 117, 24, 0.35));
+            opacity: 0.9;
+        }
+
+        .hanging-spider {
+            position: absolute;
+            top: 22px;
+            left: 19px;
+            font-size: 1.15rem;
+            transform-origin: top center;
+            animation: spiderDangle 3.2s ease-in-out infinite alternate;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.7));
+            pointer-events: none;
+        }
+
+        @keyframes spiderDangle {
+            0% { transform: translateY(0) rotate(-10deg); }
+            50% { transform: translateY(8px) rotate(10deg); }
+            100% { transform: translateY(0) rotate(-10deg); }
+        }
+
+        /* Dải viền phát sáng ma thuật ở nóc card */
+        .spooky-cap {
+            position: absolute;
+            top: -6px;
+            left: 14px;
+            right: 14px;
+            height: 8px;
+            background: linear-gradient(90deg, #FF7518 0%, #9D4EDD 50%, #00E676 100%);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(255, 117, 24, 0.6);
+            pointer-events: none;
+            z-index: 3;
+            opacity: 0.85;
+        }
+
+        /* Biểu tượng góc thẻ (Bí ngô, dơi, kẹo, bình độc) */
+        .card-corner-deco {
+            position: absolute;
+            top: -12px;
+            right: -6px;
+            font-size: 1.5rem;
+            filter: drop-shadow(0 2px 6px rgba(0,0,0,0.6)) drop-shadow(0 0 8px rgba(255, 117, 24, 0.4));
+            z-index: 4;
+            transform: rotate(12deg);
+            transition: transform 0.3s ease;
+        }
+
+        .voucher-card:hover .card-corner-deco {
+            transform: rotate(-12deg) scale(1.22);
+            filter: drop-shadow(0 0 12px rgba(255, 117, 24, 0.9));
+        }
+
+        .voucher-icon {
+            font-size: 3.8rem;
+            margin-bottom: 0.8rem;
+            margin-top: 0.5rem;
+            display: inline-block;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5)) drop-shadow(0 0 10px rgba(157, 78, 221, 0.3));
+            transition: transform 0.3s ease;
+        }
+
+        .voucher-card:hover .voucher-icon {
+            transform: scale(1.12) rotate(3deg);
+            filter: drop-shadow(0 6px 12px rgba(0,0,0,0.7)) drop-shadow(0 0 16px rgba(255, 117, 24, 0.5));
+        }
+
+        .voucher-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #FFB703;
+            margin-bottom: 1.6rem;
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.4;
+            text-shadow: 0 0 8px rgba(255, 183, 3, 0.3);
+        }
+
+        /* Nút bấm Bí Ngô Halloween & Hiệu ứng ma thuật lấp lánh */
+        .btn {
+            background: linear-gradient(135deg, #FF7518 0%, #D85000 100%);
+            color: #FFFFFF;
+            border: none;
+            padding: 0.85rem 1.6rem;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(255, 117, 24, 0.4), 0 0 8px rgba(255, 117, 24, 0.2);
+            position: relative;
+            overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        }
+
+        /* Hiệu ứng tia sáng ma thuật quét ngang khi Hover */
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -60%;
+            width: 40%;
+            height: 200%;
+            background: linear-gradient(
+                to right,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.45) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            transform: rotate(25deg);
+            transition: all 0.6s ease;
+            pointer-events: none;
+        }
+
+        .btn:hover:not(:disabled)::after {
+            left: 130%;
+        }
+
+        .btn:hover:not(:disabled) {
+            background: linear-gradient(135deg, #FF8F3D 0%, #E65A00 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(255, 117, 24, 0.8), 0 6px 20px rgba(0, 0, 0, 0.6);
+        }
+
+        .btn:active:not(:disabled) {
+            transform: scale(0.96);
+        }
+
+        .btn:disabled {
+            background: #3B2A56;
+            color: #7D6B99;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* Khối các nút hành động phía dưới */
+        .bottom-action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+            justify-content: center;
+            align-items: center;
+            margin-top: 3.2rem;
+            width: 100%;
+        }
+
+        /* Nút Vạc Phù Thủy / Góc Trút Giận */
+        .btn-vent-trigger {
+            background: linear-gradient(135deg, #7B2CBF 0%, #4A0E4E 100%);
+            box-shadow: 0 4px 16px rgba(123, 44, 191, 0.5), 0 0 10px rgba(157, 78, 221, 0.3);
+            padding: 0.95rem 2.2rem;
+            border: 1px solid rgba(157, 78, 221, 0.4);
+        }
+
+        .btn-vent-trigger:hover:not(:disabled) {
+            background: linear-gradient(135deg, #9D4EDD 0%, #5A189A 100%);
+            box-shadow: 0 0 22px rgba(157, 78, 221, 0.8), 0 0 15px rgba(255, 117, 24, 0.5);
+            border-color: #FF7518;
+        }
+
+        /* Nút Thứ cấp (Xem danh sách nguyện vọng) */
+        .btn-secondary {
+            background-color: #1E1235;
+            color: #00E676;
+            border: 2px solid #00E676;
+            padding: 0.9rem 2.2rem;
+            box-shadow: 0 4px 14px rgba(0, 230, 118, 0.2);
+            text-shadow: 0 0 8px rgba(0, 230, 118, 0.4);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: #00E676;
+            color: #0A0512;
+            box-shadow: 0 0 22px rgba(0, 230, 118, 0.7), 0 6px 18px rgba(0, 0, 0, 0.5);
+            text-shadow: none;
+        }
+
+        /* ========================================= */
+        /* ICON NHỎ NỔI NGOÀI MÀN HÌNH (FLOATING WIDGET) */
+        /* ========================================= */
+        .floating-wheel-widget {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            background: rgba(28, 18, 48, 0.95);
+            backdrop-filter: blur(8px);
+            padding: 6px 16px 6px 6px;
+            border-radius: 50px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6), 0 0 18px rgba(255, 117, 24, 0.5);
+            border: 2px solid #FF7518;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            user-select: none;
+            animation: floatingSpookyGlow 3s ease-in-out infinite alternate;
+        }
+
+        .floating-wheel-widget:hover {
+            transform: translateY(-5px) scale(1.07);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8), 0 0 25px rgba(255, 117, 24, 0.85), 0 0 15px rgba(157, 78, 221, 0.6);
+            border-color: #FFB703;
+        }
+
+        .floating-wheel-icon-box {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #FFE49E 0%, #FF7518 60%, #7B2CBF 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.5);
+            animation: gentleRotate 9s linear infinite;
+        }
+
+        @keyframes gentleRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes floatingSpookyGlow {
+            0% { transform: translateY(0); filter: drop-shadow(0 4px 8px rgba(255, 117, 24, 0.3)); }
+            100% { transform: translateY(-7px); filter: drop-shadow(0 8px 18px rgba(255, 117, 24, 0.7)) drop-shadow(0 0 12px rgba(157, 78, 221, 0.5)); }
+        }
+
+        .floating-wheel-text {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #FFB703;
+            letter-spacing: 0.3px;
+            text-shadow: 0 0 6px rgba(255, 183, 3, 0.4);
+        }
+
+        /* Modal Overlay & Card Halloween */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(8, 3, 14, 0.75);
+            backdrop-filter: blur(6px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-content {
+            background: #1c1130;
+            padding: 2.6rem 2.2rem;
+            border-radius: 26px;
+            text-align: center;
+            max-width: 90%;
+            width: 450px;
+            transform: scale(0.85);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8), 0 0 25px rgba(255, 117, 24, 0.35), 0 0 15px rgba(157, 78, 221, 0.3);
+            position: relative;
+            border: 2px solid rgba(255, 117, 24, 0.4);
+            color: var(--text-main);
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-icon {
+            font-size: 3.8rem;
+            margin-bottom: 1rem;
+            animation: bounce 2s infinite;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-12px); }
+            60% { transform: translateY(-6px); }
+        }
+
+        .modal-text {
+            font-size: 1.15rem;
+            color: #FFB703;
+            font-weight: 700;
+            line-height: 1.6;
+            margin-bottom: 1.6rem;
+            text-shadow: 0 0 8px rgba(255, 183, 3, 0.3);
+        }
+
+        .modal-title {
+            font-size: 1.4rem;
+            color: #FFA500;
+            font-weight: 800;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-shadow: 0 0 12px rgba(255, 117, 24, 0.5);
+        }
+
+        .modal-subtext {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 1.3rem;
+            font-weight: 600;
+        }
+
+        .btn-close {
+            background: linear-gradient(135deg, #7B2CBF 0%, #5A189A 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 2.2rem;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(123, 44, 191, 0.4);
+            transition: all 0.3s;
+        }
+
+        .btn-close:hover {
+            background: #9D4EDD;
+            box-shadow: 0 0 16px rgba(157, 78, 221, 0.7);
+            transform: translateY(-2px);
+        }
+
+        textarea {
+            width: 100%;
+            border: 2px solid rgba(255, 117, 24, 0.35);
+            border-radius: 14px;
+            padding: 1rem;
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            resize: none;
+            outline: none;
+            font-family: inherit;
+            background: #25173e;
+            color: #FFFFFF;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        
+        textarea:focus {
+            border-color: #FF7518;
+            box-shadow: 0 0 15px rgba(255, 117, 24, 0.4);
+        }
+
+        /* ========================================= */
+        /* COMPONENT: VẠC PHÙ THỦY & GÓC TRÚT GIẬN   */
+        /* ========================================= */
+        .note-paper-container {
+            background: #23163a;
+            border-radius: 16px;
+            padding: 1.4rem 1.2rem 1rem;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.4), inset 0 0 40px rgba(157, 78, 221, 0.12);
+            border: 1px solid rgba(255, 117, 24, 0.3);
+            position: relative;
+            margin-bottom: 1.2rem;
+            transition: transform 0.3s ease;
+        }
+
+        .washi-tape {
+            width: 95px;
+            height: 22px;
+            background: rgba(255, 117, 24, 0.35);
+            margin: -26px auto 10px;
+            border-left: 3px dashed rgba(255, 117, 24, 0.6);
+            border-right: 3px dashed rgba(255, 117, 24, 0.6);
+            transform: rotate(-2deg);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+
+        .vintage-notepad {
+            width: 100%;
+            background: repeating-linear-gradient(
+                transparent,
+                transparent 27px,
+                rgba(255, 117, 24, 0.12) 28px
+            );
+            line-height: 28px;
+            font-size: 1.02rem;
+            color: #F5EEFD;
+            border: none !important;
+            outline: none !important;
+            resize: none;
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 600;
+            padding: 0 6px;
+            box-shadow: none !important;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Radio Options */
+        .vent-options-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            text-align: left;
+            margin-bottom: 1.4rem;
+        }
+
+        .vent-radio-label {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            background: #25163d;
+            border: 1.5px solid rgba(157, 78, 221, 0.3);
+            padding: 10px 14px;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-main);
+            user-select: none;
+        }
+
+        .vent-radio-label:hover {
+            background: #2e1a4d;
+            border-color: #FF7518;
+        }
+
+        .vent-radio-label input[type="radio"] {
+            accent-color: #FF7518;
+            width: 18px;
+            height: 18px;
+            margin-top: 2px;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+
+        .vent-radio-label small {
+            display: block;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-top: 2px;
+        }
+
+        /* Nút Ném Vào Vạc Phù Thủy Thiêu Rụi */
+        .btn-shred {
+            background: linear-gradient(135deg, #FF7518 0%, #D84315 100%);
+            box-shadow: 0 4px 16px rgba(255, 117, 24, 0.5);
+            font-size: 1.02rem;
+            padding: 0.85rem 1.8rem;
+        }
+
+        .btn-shred:hover:not(:disabled) {
+            background: linear-gradient(135deg, #FF8F3D 0%, #E64A19 100%);
+            box-shadow: 0 0 22px rgba(255, 117, 24, 0.85), 0 6px 18px rgba(0,0,0,0.5);
+        }
+
+        /* Animation Thiêu rụi trong lửa tím ma thuật */
+        @keyframes burnInCauldron {
+            0% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+                filter: none;
+            }
+            25% {
+                transform: scale(0.85, 0.72) rotate(6deg) skew(6deg);
+                filter: contrast(1.4) brightness(1.2) drop-shadow(0 0 10px #FF7518);
+            }
+            50% {
+                transform: scale(0.5, 0.45) rotate(-14deg) skew(-12deg);
+                border-radius: 40%;
+                box-shadow: inset 0 0 25px rgba(255, 117, 24, 0.8), 0 0 25px #9D4EDD;
+                opacity: 0.9;
+                filter: contrast(1.8) hue-rotate(45deg);
+            }
+            75% {
+                transform: scale(0.2) rotate(35deg) translateY(40px);
+                border-radius: 50%;
+                opacity: 0.5;
+                filter: blur(2px) drop-shadow(0 0 15px #00E676);
+            }
+            100% {
+                transform: scale(0) rotate(90deg) translateY(120px);
+                opacity: 0;
+                filter: blur(8px);
+            }
+        }
+
+        .note-paper-container.shredding {
+            animation: burnInCauldron 1.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            pointer-events: none;
+        }
+
+        /* Trạng thái chữa lành sau khi xóa sổ */
+        @keyframes fadeInHealing {
+            0% { opacity: 0; transform: translateY(15px) scale(0.95); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .vent-success-view {
+            animation: fadeInHealing 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            padding: 0.5rem 0;
+        }
+
+        .vent-success-icon {
+            font-size: 4.2rem;
+            margin-bottom: 0.8rem;
+            display: inline-block;
+            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5)) drop-shadow(0 0 12px rgba(255, 117, 24, 0.5));
+            animation: gentleFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes gentleFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .vent-success-title {
+            font-size: 1.4rem;
+            color: #00E676;
+            font-weight: 800;
+            margin-bottom: 0.8rem;
+            text-shadow: 0 0 10px rgba(0, 230, 118, 0.4);
+        }
+
+        .vent-success-msg {
+            font-size: 1.05rem;
+            color: var(--text-main);
+            line-height: 1.6;
+            margin-bottom: 1.8rem;
+            font-weight: 600;
+        }
+
+        /* ========================================= */
+        /* COMPONENT: VÒNG QUAY MA THUẬT "HÔM NAY ĂN GÌ?" */
+        /* ========================================= */
+        .wheel-modal-content {
+            width: 480px;
+            max-width: 95%;
+            padding: 2.2rem 1.6rem;
+        }
+
+        .wheel-stage {
+            position: relative;
+            width: 330px;
+            height: 330px;
+            margin: 1.5rem auto 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #wheelCanvas {
+            width: 330px;
+            height: 330px;
+            border-radius: 50%;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7), 0 0 0 6px #1c1130, 0 0 0 11px #FF7518, 0 0 25px rgba(255, 117, 24, 0.5);
+            background: #1c1130;
+            display: block;
+        }
+
+        /* Mũi tên kim chỉ ở đỉnh vòng quay trỏ xuống */
+        .wheel-pointer {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 32px;
+            height: 38px;
+            z-index: 12;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.6)) drop-shadow(0 0 8px rgba(255, 117, 24, 0.8));
+            pointer-events: none;
+            transition: transform 0.1s ease;
+        }
+
+        .wheel-pointer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 16px solid transparent;
+            border-right: 16px solid transparent;
+            border-top: 32px solid #FF7518;
+        }
+
+        .wheel-pointer::after {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 14px;
+            height: 14px;
+            background: #FFB703;
+            border-radius: 50%;
+            border: 2px solid #FFFFFF;
+            box-shadow: 0 0 8px #FFB703;
+        }
+
+        /* Nút tròn QUAY ở tâm vòng quay */
+        .wheel-center-btn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #FFE29F 0%, #FF7518 55%, #7B2CBF 100%);
+            border: 4px solid #FFFFFF;
+            color: #FFFFFF;
+            font-weight: 800;
+            font-size: 1.05rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5), 0 0 16px rgba(255, 117, 24, 0.7);
+            z-index: 8;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+        }
+
+        .wheel-center-btn:hover:not(:disabled) {
+            transform: translate(-50%, -50%) scale(1.08);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.7), 0 0 24px rgba(255, 117, 24, 0.95);
+        }
+
+        .wheel-center-btn:active:not(:disabled) {
+            transform: translate(-50%, -50%) scale(0.95);
+        }
+
+        .wheel-center-btn:disabled {
+            opacity: 0.85;
+            cursor: not-allowed;
+        }
+
+        .btn-spin-now {
+            background: linear-gradient(135deg, #FF7518 0%, #9D4EDD 100%);
+            font-size: 1.1rem;
+            padding: 0.9rem 2.4rem;
+            box-shadow: 0 4px 16px rgba(255, 117, 24, 0.45);
+        }
+
+        .btn-spin-now:hover:not(:disabled) {
+            background: linear-gradient(135deg, #FF8F3D 0%, #B76EFA 100%);
+            box-shadow: 0 0 22px rgba(255, 117, 24, 0.75), 0 6px 18px rgba(0,0,0,0.5);
+        }
+
+        /* Badge món ăn được chốt */
+        .chosen-food-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #2D1A45 0%, #3D1F2E 100%);
+            color: #FFB703;
+            font-size: 1.8rem;
+            font-weight: 800;
+            padding: 10px 24px;
+            border-radius: 50px;
+            border: 2px dashed #FF7518;
+            margin: 0.8rem 0 1.2rem;
+            box-shadow: 0 4px 16px rgba(255, 117, 24, 0.3), 0 0 15px rgba(255, 183, 3, 0.3);
+            animation: bounce 2s infinite;
+            text-shadow: 0 0 10px rgba(255, 183, 3, 0.5);
+        }
+        
+        /* Danh sách nguyện vọng */
+        .wishlist-items {
+            text-align: left;
+            overflow-y: auto;
+            max-height: 320px;
+            margin-bottom: 1.5rem;
+            padding-right: 5px;
+        }
+        
+        .wish-item {
+            background: #25163d;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            border-left: 4px solid #FF7518;
+            border-top: 1px solid rgba(157, 78, 221, 0.25);
+            border-right: 1px solid rgba(157, 78, 221, 0.25);
+            border-bottom: 1px solid rgba(157, 78, 221, 0.25);
+        }
+
+        .wish-item strong {
+            color: #FFB703;
+            font-size: 1.02rem;
+        }
+
+        /* Danh sách từng món mỹ phẩm */
+        .cosmetic-section-title {
+            color: #00E676;
+            margin-top: 16px;
+            margin-bottom: 6px;
+            font-weight: 800;
+            font-size: 1.05rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-shadow: 0 0 8px rgba(0, 230, 118, 0.35);
+        }
+
+        .cosmetic-item-btn {
+            background-color: #24163c;
+            color: #F5EEFD;
+            border: 1px solid rgba(255, 117, 24, 0.3);
+            padding: 11px 14px;
+            margin-top: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
+            transition: all 0.25s ease;
+            line-height: 1.45;
+            display: block;
+        }
+
+        .cosmetic-item-btn:hover {
+            background-color: #311c52;
+            border-color: #FF7518;
+            color: #FFB703;
+            transform: translateX(5px);
+            box-shadow: 0 3px 12px rgba(255, 117, 24, 0.3);
+        }
+
+        /* Thanh cuộn mềm mại tone Halloween */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #170d28;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #5A189A;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #FF7518;
+        }
+
+        @media (max-width: 600px) {
+            h1.main-title {
+                font-size: 1.85rem;
+            }
+            .witch-hat {
+                top: -18px;
+                left: -16px;
+                font-size: 1.7rem;
+            }
+            .voucher-card {
+                width: 100%;
+                max-width: 320px;
+            }
+            .bottom-action-buttons {
+                flex-direction: column;
+                gap: 0.9rem;
+            }
+            .btn-vent-trigger, .btn-secondary {
+                width: 100%;
+                max-width: 320px;
+            }
+            .wheel-stage {
+                width: 290px;
+                height: 290px;
+            }
+            #wheelCanvas {
+                width: 290px;
+                height: 290px;
+            }
+            .wheel-center-btn {
+                width: 62px;
+                height: 62px;
+                font-size: 0.95rem;
+            }
+            .floating-wheel-widget {
+                bottom: 20px;
+                right: 16px;
+                padding: 5px 12px 5px 5px;
+            }
+            .floating-wheel-icon-box {
+                width: 42px;
+                height: 42px;
+                font-size: 1.4rem;
+            }
+            .floating-wheel-text {
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Canvas Halloween: Dơi bay lượn, bóng ma nhỏ & tàn lửa ma thuật -->
+    <canvas id="halloweenCanvas"></canvas>
+
+    <!-- Icon nhỏ Vòng Quay nổi ngoài màn hình -->
+    <div class="floating-wheel-widget" onclick="openWheelModal()" title="Vòng quay ma thuật Hôm nay ăn gì?">
+        <div class="floating-wheel-icon-box">🎃</div>
+        <span class="floating-wheel-text">Hôm nay ăn gì? 🍽️</span>
+    </div>
+
+    <div class="page-content">
+        <!-- Dải trang trí Halloween rực rỡ -->
+        <div class="garland">🎃 🦇 👻 🍬 🕸️ 🕯️ 🕷️ 🔮</div>
+
+        <header>
+            <h1 class="main-title">
+                <span class="witch-hat">🧙‍♀️</span>Tấm Thẻ Cứu Cánh Cho Em 🎃
+            </h1>
+            <p class="subtitle">Béoooooo mệt rồi thì nghỉ ngơi đẹeeee</p>
+            <div>
+                <span class="spooky-badge">🎃 Spooky Halloween Edition • Trick or Treat Em Yêu 🍬</span>
+            </div>
+        </header>
+
+        <div class="voucher-container">
+            <!-- Voucher 1: Mỹ Phẩm Các Loại -->
+            <div class="voucher-card">
+                <div class="spooky-cap"></div>
+                <div class="spider-web-corner">🕸️</div>
+                <div class="hanging-spider">🕷️</div>
+                <div class="card-corner-deco">🎃</div>
+                <div class="voucher-icon">💄✨</div>
+                <div class="voucher-title">Mỹ Phẩm Xinh Xẻo Biến Hình</div>
+                <button class="btn" onclick="openModal('cosmeticsModal')">Chọn món phép thuật 🪄</button>
+            </div>
+
+            <!-- Voucher 2: Massage Cổ Vai Gáy -->
+            <div class="voucher-card">
+                <div class="spooky-cap"></div>
+                <div class="spider-web-corner">🕸️</div>
+                <div class="hanging-spider">🕷️</div>
+                <div class="card-corner-deco">🦇</div>
+                <div class="voucher-icon">💆‍♀️♨️</div>
+                <div class="voucher-title">15 Phút Massage Cổ Vai Gáy</div>
+                <button class="btn" onclick="activateVoucher(this, '15 Phút Massage Cổ Vai Gáy')">Kích hoạt xoa bóp ♨️</button>
+            </div>
+
+            <!-- Voucher 3: Bánh Ngọt Tận Miệng -->
+            <div class="voucher-card">
+                <div class="spooky-cap"></div>
+                <div class="spider-web-corner">🕸️</div>
+                <div class="hanging-spider">🕷️</div>
+                <div class="card-corner-deco">🍬</div>
+                <div class="voucher-icon">🍰🍭</div>
+                <div class="voucher-title">Bánh ngọttt Tận Miệng</div>
+                <button class="btn" onclick="activateVoucher(this, 'Bánh ngọttt Tận Miệng')">Trick or Treat 🍰</button>
+            </div>
+
+            <!-- Voucher 4: Nguyện Vọng Tự Chọn -->
+            <div class="voucher-card">
+                <div class="spooky-cap"></div>
+                <div class="spider-web-corner">🕸️</div>
+                <div class="hanging-spider">🕷️</div>
+                <div class="card-corner-deco">🔮</div>
+                <div class="voucher-icon">📜🧙‍♀️</div>
+                <div class="voucher-title">Nguyện Vọng Tự Chọn</div>
+                <button class="btn" onclick="openModal('customWishModal')">Viết thần chú ✍️</button>
+            </div>
+        </div>
+
+        <!-- Khối nút hành động: Vạc Phù Thủy & Xem Danh Sách Nguyện Vọng -->
+        <div class="bottom-action-buttons">
+            <button class="btn btn-vent-trigger" onclick="openVentModal()">🔥 Vạc Phù Thủy - Ném Hết Muộn Phiền 🧙‍♀️</button>
+            <button class="btn btn-secondary" onclick="showWishlist()">Cuốn Sổ Thần Chú Đã Gửi 🔮</button>
+        </div>
+    </div>
+
+    <!-- Pop-up Modal Kích hoạt thành công -->
+    <div class="modal-overlay" id="successModal">
+        <div class="modal-content">
+            <div class="modal-icon">🎃💌</div>
+            <div class="modal-text">Đã gửi yêu cầu!<br>Anhh đang cbiiiiiii , má đợiiiiii 🦇🎃</div>
+            <button class="btn-close" onclick="closeAllModals()">Dạ vâng 🥰</button>
+        </div>
+    </div>
+
+    <!-- Modal: Nhập Nguyện Vọng Tuỳ Chọn -->
+    <div class="modal-overlay" id="customWishModal">
+        <div class="modal-content">
+            <div class="modal-title"><span>📜</span> Thư Gửi Anh...</div>
+            <textarea id="customWishInput" placeholder="Viết những gì em muốn anh làm vào đây nhé..." rows="4"></textarea>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <button class="btn-close" style="background: #382452; color: #BCA8DA; box-shadow: none;" onclick="closeAllModals()">Hủy</button>
+                <button id="submitCustomBtn" class="btn" onclick="submitCustomWish()">Gửi thần chú 💌</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Vạc Phù Thủy & Góc Trút Giận (Burn / Shred Note Box) -->
+    <div class="modal-overlay" id="ventModal">
+        <div class="modal-content">
+            
+            <!-- Trạng thái 1: Nhập tâm sự & Thiêu rụi -->
+            <div id="ventInputState">
+                <div class="modal-title"><span>🧪</span> Vạc Phù Thủy Xả Muộn Phiền</div>
+                <p class="modal-subtext">Có chuyện gì làm em bực bội hay ấm ức hôm nay? Viết hết vào đây để ném vào vạc lửa thiêu rụi nhé...</p>
+                
+                <!-- Khối trang giấy phép thuật -->
+                <div class="note-paper-container" id="notePaperContainer">
+                    <div class="washi-tape"></div>
+                    <textarea id="ventInput" class="vintage-notepad" placeholder="Gõ hết những điều làm em khó chịu ở đây..." rows="5"></textarea>
+                </div>
+
+                <!-- Tùy chọn gửi -->
+                <div class="vent-options-group">
+                    <label class="vent-radio-label">
+                        <input type="radio" name="ventMode" value="destroy" checked>
+                        <div>
+                            <span>🔒 Chỉ xả cảm xúc</span>
+                            <small>(Thiêu rụi vĩnh viễn trong vạc lửa, không ai đọc được)</small>
+                        </div>
+                    </label>
+                    <label class="vent-radio-label">
+                        <input type="radio" name="ventMode" value="send">
+                        <div>
+                            <span>💌 Gửi ẩn danh cho anh người yêu</span>
+                            <small>(Để anh biết đường dỗ dành em ngay lập tức)</small>
+                        </div>
+                    </label>
+                </div>
+
+                <!-- Nút hành động -->
+                <div style="display: flex; gap: 0.8rem; justify-content: center;">
+                    <button class="btn-close" style="background: #382452; color: #BCA8DA; box-shadow: none;" onclick="closeAllModals()">Để sau</button>
+                    <button id="shredBtn" class="btn btn-shred" onclick="shredAndBurnNote()">
+                        <span>🔥 Ném Vào Vạc Thiêu Rụi 🧙‍♀️</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Trạng thái 2: Chữa lành sau khi xóa sổ -->
+            <div id="ventSuccessState" class="vent-success-view" style="display: none;">
+                <div class="vent-success-icon">🎃✨</div>
+                <div class="vent-success-title">Những muộn phiền đã tan thành mây khói! ✨</div>
+                <p class="vent-success-msg">Vạc phù thủy đã thiêu rụi hết ấm ức rồi. Em đã vất vả nhiều rồi, giờ thì thở phào và nhận kẹo ngọt ngào nhé 🍬</p>
+                <div style="display: flex; gap: 0.8rem; justify-content: center; flex-wrap: wrap;">
+                    <button class="btn btn-secondary" style="margin-top: 0;" onclick="resetVentForm()">Viết tiếp nếu còn bực 📝</button>
+                    <button class="btn" onclick="closeAllModals()">Em đỡ hơn rồi 🥰</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Modal: Vòng Quay "Hôm Nay Ăn Gì?" -->
+    <div class="modal-overlay" id="wheelModal">
+        <div class="modal-content wheel-modal-content">
+            <div class="modal-title"><span>🍽️</span> Hôm Nay Ăn Gì Ta?</div>
+            <p class="modal-subtext">Khỏi cần suy nghĩ đau đầu, để vòng quay ma thuật chọn món cho em nha!</p>
+
+            <!-- Vùng hiển thị vòng quay -->
+            <div class="wheel-stage">
+                <div class="wheel-pointer" id="wheelPointer"></div>
+                <canvas id="wheelCanvas" width="660" height="660"></canvas>
+                <button id="wheelCenterBtn" class="wheel-center-btn" onclick="spinWheel()">QUAY 🎃</button>
+            </div>
+
+            <div style="display: flex; gap: 0.8rem; justify-content: center; flex-wrap: wrap;">
+                <button class="btn-close" style="background: #382452; color: #BCA8DA; box-shadow: none;" onclick="closeAllModals()">Để sau</button>
+                <button id="spinBtnBottom" class="btn btn-spin-now" onclick="spinWheel()">
+                    <span>🎡 QUAY NGAY 🎃</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Popup Chúc Mừng Kết Quả Ăn Uống -->
+    <div class="modal-overlay" id="foodResultModal">
+        <div class="modal-content" style="max-width: 430px;">
+            <div class="modal-icon" style="font-size: 3.8rem;">🎉🎃</div>
+            <div class="modal-title" style="color: #FF7518; font-size: 1.45rem;">Chốt đơn hôm nay:</div>
+            
+            <div id="chosenFoodBadge" class="chosen-food-badge">Mỳ ý Pizza 🍕</div>
+            
+            <p class="modal-text" style="color: var(--text-main); font-size: 1.05rem; font-weight: 600; margin-bottom: 1.8rem; line-height: 1.6;">
+                Hôm nay duyệt món này nhé! Để anh lo dắt béo đi ăn / order tận miệng nha! 🥰
+            </p>
+            
+            <div style="display: flex; gap: 0.8rem; justify-content: center; flex-wrap: wrap;">
+                <button class="btn btn-secondary" style="margin-top: 0; padding: 0.8rem 1.6rem;" onclick="reSpinFromModal()">Quay lại lần nữa 🔄</button>
+                <button id="confirmOrderBtn" class="btn" style="padding: 0.8rem 1.8rem;" onclick="confirmFoodOrder()">Chốt luôn món này! 💖</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Chọn Mỹ Phẩm -->
+    <div class="modal-overlay" id="cosmeticsModal">
+        <div class="modal-content" style="max-height: 85vh; display: flex; flex-direction: column; padding: 2.2rem 1.6rem;">
+            <div class="modal-title"><span>💄</span> Danh Sách Mỹ Phẩm Em Thích</div>
+            <div style="overflow-y: auto; text-align: left; padding-right: 6px; margin-bottom: 1.5rem;">
+                
+                <div class="cosmetic-section-title">✨ 1. Cushion</div>
+                <button class="cosmetic-item-btn" onclick="activateCosmetic(this, 'Cushion: Fwee xanh nước biển màu 01')">❄️ Fwee xanh nước biển màu 01</button>
+                <button class="cosmetic-item-btn" onclick="activateCosmetic(this, 'Cushion: Clio hồng (mesh glow) màu 02')">🌸 Clio hồng (mesh glow) màu 02</button>
+                <button class="cosmetic-item-btn" onclick="activateCosmetic(this, 'Cushion: 3CE màu N01')">✨ 3CE màu N01</button>
+                <button class="cosmetic-item-btn" onclick="activateCosmetic(this, 'Cushion: Aperire màu 1')">💫 Aperire màu 1</button>
+
+                <div class="cosmetic-section-title">🎨 2. Bảng mắt</div>
+                <button class="cosmetic-item-btn" onclick="activateCosmetic(this, 'Bảng mắt: Clio tone hồng')">🌸 Clio tone hồng</button>
+                <button class="cosmetic-item-btn" onclick="activateCosmetic(this, 'Bảng mắt: Romand tone hồng')">🍓 Romand tone hồng</button>
+                <button class="cosmetic-item-btn" onclick="activateCosmetic(this, 'Bảng mắt: 3CE')">✨ 3CE</button>
+
+                <div class="cosmetic-section-title">💋 3. Son</div>
+                <button class="cosmetic-item-btn" onclick="activateCosmetic(this, 'Son: 3CE Blur Water Tint Mịn Môi (Laydown - hồng trầm)')">💄 3CE Blur Water Tint (màu Laydown - hồng trầm)</button>
+                <button class="cosmetic-item-btn" onclick="activateCosmetic(this, 'Son: Maybelline (dòng super stay)')">💋 Maybelline (Các dòng "super stay")</button>
+
+                <div class="cosmetic-section-title">🌸 4. Má hồng</div>
+                <button class="cosmetic-item-btn" onclick="activateCosmetic(this, 'Má hồng: 3CE')">💖 3CE</button>
+                <button class="cosmetic-item-btn" onclick="activateCosmetic(this, 'Má hồng: Romand')">🍑 Romand</button>
+                <button class="cosmetic-item-btn" onclick="activateCosmetic(this, 'Má hồng: Clio')">🌸 Clio</button>
+                <button class="cosmetic-item-btn" onclick="activateCosmetic(this, 'Má hồng: Maybelline')">✨ Maybelline</button>
+                <button class="cosmetic-item-btn" onclick="activateCosmetic(this, 'Má hồng: Ofélia')">🎀 Ofélia</button>
+
+                <div class="cosmetic-section-title">🧁 5. Phấn phủ</div>
+                <button class="cosmetic-item-btn" onclick="activateCosmetic(this, 'Phấn phủ: Carslan (bản thường, da khô/hỗn hợp, tím/da/trong suốt)')">✨ Carslan (bản thường, da khô/hỗn hợp, tím/da/trong suốt)</button>
+
+                <div class="cosmetic-section-title">💦 6. Xịt khoá nền</div>
+                <button class="cosmetic-item-btn" onclick="activateCosmetic(this, 'Xịt khoá nền: Maybelline')">💧 Maybelline</button>
+                <button class="cosmetic-item-btn" onclick="activateCosmetic(this, 'Xịt khoá nền: So natural')">🌿 So natural</button>
+                <button class="cosmetic-item-btn" onclick="activateCosmetic(this, 'Xịt khoá nền: 3CE')">✨ 3CE</button>
+
+                <div class="cosmetic-section-title">👁️ 7. Mascara (Độ khó cao 😆)</div>
+                <button class="cosmetic-item-btn" onclick="activateCosmetic(this, 'Mascara: Maybelline (độ khó cao :))')">🖤 Maybelline</button>
+
+            </div>
+            <button class="btn-close" onclick="closeAllModals()">Đóng</button>
+        </div>
+    </div>
+
+    <!-- Modal: Xem Danh Sách Nguyện Vọng Đã Gửi -->
+    <div class="modal-overlay" id="wishlistModal">
+        <div class="modal-content" style="display: flex; flex-direction: column;">
+            <div class="modal-title"><span>📜</span> Nguyện Vọng Đã Gửi</div>
+            <div id="wishlistItems" class="wishlist-items">
+                <!-- Danh sách nguyện vọng sẽ được chèn vào đây bằng JS -->
+            </div>
+            <button class="btn-close" onclick="closeAllModals()">Đóng</button>
+        </div>
+    </div>
+
+    <script>
+        // --- HIỆU ỨNG HALLOWEEN CANVA: DƠI BAY, MA NHỎ & TÀN LỬA MA THUẬT ---
+        (function initHalloweenCanvas() {
+            const canvas = document.getElementById('halloweenCanvas');
+            const ctx = canvas.getContext('2d');
+            let width = canvas.width = window.innerWidth;
+            let height = canvas.height = window.innerHeight;
+
+            window.addEventListener('resize', () => {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+            });
+
+            // 1. Tàn lửa ma thuật (Glowing Embers)
+            const emberColors = ['#FF7518', '#FFB703', '#9D4EDD', '#00E676', '#FF4081'];
+            const embers = [];
+            const emberCount = 45;
+
+            for (let i = 0; i < emberCount; i++) {
+                embers.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    r: Math.random() * 2.5 + 1,
+                    color: emberColors[Math.floor(Math.random() * emberColors.length)],
+                    speedY: Math.random() * 0.7 + 0.3,
+                    sway: Math.random() * 0.02 + 0.01,
+                    swayOffset: Math.random() * Math.PI * 2,
+                    alpha: Math.random() * 0.6 + 0.3
+                });
+            }
+
+            // 2. Những chú dơi lượn qua bầu trời (Flying Bats)
+            const bats = [];
+            const batCount = 6;
+            for (let i = 0; i < batCount; i++) {
+                bats.push({
+                    x: Math.random() * width,
+                    y: Math.random() * (height * 0.6),
+                    speedX: Math.random() * 1.5 + 1,
+                    speedY: (Math.random() - 0.5) * 0.8,
+                    wingState: Math.random() * Math.PI,
+                    size: Math.random() * 7 + 10
+                });
+            }
+
+            // 3. Những chú ma nhỏ xíu dễ thương lơ lửng (Cute floating ghosts)
+            const ghosts = [];
+            const ghostCount = 5;
+            for (let i = 0; i < ghostCount; i++) {
+                ghosts.push({
+                    x: Math.random() * width,
+                    y: height + Math.random() * 200,
+                    speedY: Math.random() * 0.5 + 0.35,
+                    swayOffset: Math.random() * Math.PI * 2,
+                    size: Math.random() * 6 + 18,
+                    alpha: Math.random() * 0.35 + 0.25
+                });
+            }
+
+            let angle = 0;
+            function render() {
+                ctx.clearRect(0, 0, width, height);
+                angle += 0.02;
+
+                // Vẽ Embers
+                for (let i = 0; i < emberCount; i++) {
+                    const e = embers[i];
+                    e.y -= e.speedY;
+                    e.x += Math.sin(angle + e.swayOffset) * 0.6;
+
+                    if (e.y < -10) {
+                        e.y = height + 10;
+                        e.x = Math.random() * width;
+                    }
+                    if (e.x > width) e.x = 0;
+                    if (e.x < 0) e.x = width;
+
+                    ctx.beginPath();
+                    ctx.arc(e.x, e.y, e.r, 0, Math.PI * 2);
+                    ctx.fillStyle = e.color;
+                    ctx.globalAlpha = e.alpha * (0.6 + 0.4 * Math.sin(angle * 2 + e.swayOffset));
+                    ctx.shadowBlur = 8;
+                    ctx.shadowColor = e.color;
+                    ctx.fill();
+                }
+
+                // Vẽ Cute Ghosts
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = "rgba(157, 78, 221, 0.4)";
+                for (let i = 0; i < ghostCount; i++) {
+                    const g = ghosts[i];
+                    g.y -= g.speedY;
+                    const ghostX = g.x + Math.sin(angle * 0.8 + g.swayOffset) * 20;
+
+                    if (g.y < -50) {
+                        g.y = height + 50;
+                        g.x = Math.random() * width;
+                    }
+
+                    ctx.save();
+                    ctx.translate(ghostX, g.y);
+                    ctx.globalAlpha = g.alpha;
+
+                    // Thân ma
+                    ctx.fillStyle = "#FFFFFF";
+                    ctx.beginPath();
+                    ctx.arc(0, 0, g.size, Math.PI, 0, false);
+                    ctx.lineTo(g.size, g.size * 1.2);
+                    // Đuôi lượn sóng
+                    ctx.quadraticCurveTo(g.size * 0.5, g.size * 0.9, 0, g.size * 1.2);
+                    ctx.quadraticCurveTo(-g.size * 0.5, g.size * 0.9, -g.size, g.size * 1.2);
+                    ctx.closePath();
+                    ctx.fill();
+
+                    // Mắt ma nhỏ
+                    ctx.fillStyle = "#1E1136";
+                    ctx.beginPath();
+                    ctx.arc(-g.size * 0.35, -g.size * 0.1, g.size * 0.12, 0, Math.PI * 2);
+                    ctx.arc(g.size * 0.35, -g.size * 0.1, g.size * 0.12, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    ctx.restore();
+                }
+
+                // Vẽ Bats
+                ctx.shadowBlur = 0;
+                for (let i = 0; i < batCount; i++) {
+                    const b = bats[i];
+                    b.x += b.speedX;
+                    b.y += Math.sin(angle + i) * 0.8 + b.speedY;
+                    b.wingState += 0.25;
+
+                    if (b.x > width + 50) {
+                        b.x = -50;
+                        b.y = Math.random() * (height * 0.6);
+                    }
+
+                    ctx.save();
+                    ctx.translate(b.x, b.y);
+                    ctx.globalAlpha = 0.5;
+                    ctx.fillStyle = "#2D154B";
+
+                    // Thân dơi nhỏ
+                    ctx.beginPath();
+                    ctx.ellipse(0, 0, b.size * 0.4, b.size * 0.25, 0, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Đôi cánh đập
+                    const wingSpread = Math.sin(b.wingState) * (b.size * 0.9);
+                    ctx.beginPath();
+                    ctx.moveTo(0, 0);
+                    ctx.quadraticCurveTo(b.size * 0.8, -b.size * 0.7 + wingSpread, b.size * 1.5, wingSpread);
+                    ctx.quadraticCurveTo(b.size * 0.6, 0, 0, 0);
+                    ctx.moveTo(0, 0);
+                    ctx.quadraticCurveTo(-b.size * 0.8, -b.size * 0.7 + wingSpread, -b.size * 1.5, wingSpread);
+                    ctx.quadraticCurveTo(-b.size * 0.6, 0, 0, 0);
+                    ctx.fill();
+
+                    ctx.restore();
+                }
+
+                ctx.globalAlpha = 1;
+                requestAnimationFrame(render);
+            }
+            render();
+        })();
+
+        // --- QUẢN LÝ DANH SÁCH NGUYỆN VỌNG (LocalStorage) ---
+        let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+
+        function saveWish(wishName) {
+            const now = new Date();
+            const time = now.toLocaleTimeString('vi-VN') + ' - ' + now.toLocaleDateString('vi-VN');
+            wishlist.unshift({ name: wishName, time: time });
+            localStorage.setItem('wishlist', JSON.stringify(wishlist));
+        }
+
+        // --- GỬI EMAIL VỀ GMAIL BẰNG WEB3FORMS ---
+        function sendEmail(wishContent, callback) {
+            fetch("https://api.web3forms.com/submit", {
+                method: "POST",
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    access_key: "85772af0-4866-4aff-97ba-30d3c4b7345a",
+                    subject: "🎃 [HALLOWEEN SPOOKY] CÓ NGUYỆN VỌNG MỚI TỪ EM YÊU!",
+                    "Nguyện_vọng": wishContent,
+                    "Thời_gian": new Date().toLocaleString('vi-VN')
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Email sent successfully", data);
+                if(callback) callback();
+            })
+            .catch(error => {
+                console.error("Lỗi gửi email:", error);
+                if(callback) callback();
+            });
+        }
+
+        // --- HIỆU ỨNG PHÁO HOA HALLOWEEN RỰC RỠ ---
+        function fireConfetti() {
+            var count = 260;
+            // Palette Halloween: Cam bí ngô, Tím phù thủy, Xanh độc dược, Vàng nến, Kẹo hồng, Trắng bóng ma
+            var defaults = { 
+                origin: { y: 0.6 }, 
+                colors: ['#FF7518', '#9D4EDD', '#00E676', '#FFB703', '#FF4081', '#FFFFFF'] 
+            };
+
+            function fire(particleRatio, opts) {
+                confetti(Object.assign({}, defaults, opts, { particleCount: Math.floor(count * particleRatio) }));
+            }
+
+            fire(0.25, { spread: 28, startVelocity: 55 });
+            fire(0.2, { spread: 60 });
+            fire(0.35, { spread: 100, decay: 0.91, scalar: 0.95 });
+            fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+            fire(0.1, { spread: 120, startVelocity: 45 });
+        }
+
+        // --- CÁC HÀM XỬ LÝ SỰ KIỆN ---
+
+        // 1. Khi nhấn "Kích hoạt" trên các thẻ cố định
+        function activateVoucher(btn, wishName) {
+            let originalText = btn.innerHTML;
+            btn.innerHTML = "Đang gửi... ⏳";
+            btn.disabled = true;
+            
+            saveWish(wishName); 
+            
+            sendEmail(wishName, () => {
+                btn.innerHTML = "Đã kích hoạt ✨";
+                fireConfetti();
+                setTimeout(() => openModal('successModal'), 600);
+            });
+        }
+
+        function activateCosmetic(btn, cosmeticName) {
+            let originalText = btn.innerHTML;
+            btn.innerHTML = "Đang gửi... ⏳";
+            btn.disabled = true;
+            
+            saveWish(cosmeticName); 
+            
+            sendEmail(cosmeticName, () => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                closeAllModals();
+                fireConfetti();
+                setTimeout(() => openModal('successModal'), 600);
+            });
+        }
+
+        // 2. Gửi nguyện vọng tuỳ chỉnh
+        function submitCustomWish() {
+            const input = document.getElementById('customWishInput');
+            const submitBtn = document.getElementById('submitCustomBtn');
+            const wishName = input.value.trim();
+            
+            if(wishName) {
+                submitBtn.innerText = "Đang gửi... ⏳";
+                submitBtn.disabled = true;
+
+                saveWish("Nguyện vọng riêng: " + wishName);
+                
+                sendEmail("Nguyện vọng riêng: " + wishName, () => {
+                    input.value = "";
+                    submitBtn.innerText = "Gửi thần chú 💌";
+                    submitBtn.disabled = false;
+                    closeAllModals();
+                    fireConfetti();
+                    setTimeout(() => openModal('successModal'), 600);
+                });
+            } else {
+                alert("Em chưa viết nguyện vọng kìa!");
+            }
+        }
+
+        // 3. Hiển thị danh sách nguyện vọng đã gửi
+        function showWishlist() {
+            const listContainer = document.getElementById('wishlistItems');
+            listContainer.innerHTML = '';
+            
+            if(wishlist.length === 0) {
+                listContainer.innerHTML = '<p style="color: var(--text-muted); text-align: center; font-style: italic; padding: 1.5rem 0;">Chưa có nguyện vọng nào được gửi.</p>';
+            } else {
+                wishlist.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'wish-item';
+                    div.innerHTML = `<strong>${item.name}</strong><br><small style="color: #BCA8DA;">${item.time}</small>`;
+                    listContainer.appendChild(div);
+                });
+            }
+            
+            openModal('wishlistModal');
+        }
+
+        // =========================================
+        // LOGIC: VẠC PHÙ THỦY & GÓC TRÚT GIẬN
+        // =========================================
+        function openVentModal() {
+            resetVentForm();
+            openModal('ventModal');
+        }
+
+        function resetVentForm() {
+            const noteContainer = document.getElementById('notePaperContainer');
+            const input = document.getElementById('ventInput');
+            const shredBtn = document.getElementById('shredBtn');
+            const inputState = document.getElementById('ventInputState');
+            const successState = document.getElementById('ventSuccessState');
+
+            noteContainer.classList.remove('shredding');
+            input.value = '';
+            input.disabled = false;
+            shredBtn.disabled = false;
+            shredBtn.innerHTML = '<span>🔥 Ném Vào Vạc Thiêu Rụi 🧙‍♀️</span>';
+
+            inputState.style.display = 'block';
+            successState.style.display = 'none';
+        }
+
+        function shredAndBurnNote() {
+            const input = document.getElementById('ventInput');
+            const text = input.value.trim();
+            if (!text) {
+                alert("Em chưa viết gì vào giấy kìa! Cứ viết hết ra cho nhẹ lòng nhé.");
+                return;
+            }
+
+            const shredBtn = document.getElementById('shredBtn');
+            const noteContainer = document.getElementById('notePaperContainer');
+            const selectedMode = document.querySelector('input[name="ventMode"]:checked').value;
+
+            // Khóa nút & textarea trong lúc hiệu ứng chạy
+            input.disabled = true;
+            shredBtn.disabled = true;
+            shredBtn.innerHTML = '<span>Đang thiêu rụi... ⏳</span>';
+
+            // Kích hoạt animation thiêu rụi lửa tím
+            noteContainer.classList.add('shredding');
+
+            // Nếu người yêu chọn "Gửi ẩn danh cho anh" -> Gửi mail Web3Forms
+            if (selectedMode === 'send') {
+                sendEmail("🎃 TÂM SỰ/TRÚT GIẬN CỦA EM: " + text);
+            }
+
+            // Sau 1.25s khi tờ giấy biến mất -> Hiển thị thông báo chữa lành ấm áp
+            setTimeout(() => {
+                document.getElementById('ventInputState').style.display = 'none';
+                document.getElementById('ventSuccessState').style.display = 'block';
+                
+                confetti({
+                    particleCount: 75,
+                    spread: 75,
+                    origin: { y: 0.6 },
+                    colors: ['#FF7518', '#9D4EDD', '#00E676', '#FFB703']
+                });
+            }, 1250);
+        }
+
+        // =========================================
+        // LOGIC: VÒNG QUAY MA THUẬT "HÔM NAY ĂN GÌ?"
+        // =========================================
+        const foods = [
+            { name: 'Đồ chay', icon: '🥗', bg: '#174A2E', text: '#A7F3D0' },
+            { name: 'Đồ Trung', icon: '🥟', bg: '#6B1616', text: '#FECDD3' },
+            { name: 'Đồ Hàn', icon: '🥘', bg: '#873B08', text: '#FEF3C7' },
+            { name: 'Đồ Nhật', icon: '🍣', bg: '#58165B', text: '#F5D0FE' },
+            { name: 'Mỳ ý Pizza', icon: '🍕', bg: '#371569', text: '#DDD6FE' },
+            { name: 'Ăn nướng', icon: '🥩', bg: '#641919', text: '#FED7AA' },
+            { name: 'Ăn lẩu', icon: '🍲', bg: '#48136A', text: '#E9D5FF' },
+            { name: 'Cơm tấm', icon: '🍖', bg: '#103E39', text: '#99F6E4' },
+            { name: 'Mỳ cayyy', icon: '🍜', bg: '#781515', text: '#FEE2E2' }
+        ];
+
+        let wheelCanvas, wheelCtx;
+        let currentWheelAngle = 0;
+        let isSpinning = false;
+        let chosenFoodItem = null;
+
+        function openWheelModal() {
+            openModal('wheelModal');
+            setTimeout(() => {
+                initWheel();
+            }, 100);
+        }
+
+        function initWheel() {
+            wheelCanvas = document.getElementById('wheelCanvas');
+            if (!wheelCanvas) return;
+            wheelCtx = wheelCanvas.getContext('2d');
+            drawWheel(currentWheelAngle);
+        }
+
+        function drawWheel(angle) {
+            if (!wheelCtx) return;
+            const size = wheelCanvas.width;
+            const center = size / 2;
+            const radius = center - 16;
+            const numSlices = foods.length;
+            const arc = (2 * Math.PI) / numSlices;
+
+            wheelCtx.clearRect(0, 0, size, size);
+
+            // Vẽ từng miếng nan quạt
+            for (let i = 0; i < numSlices; i++) {
+                const sliceAngle = angle + i * arc;
+
+                wheelCtx.beginPath();
+                wheelCtx.moveTo(center, center);
+                wheelCtx.arc(center, center, radius, sliceAngle, sliceAngle + arc);
+                wheelCtx.fillStyle = foods[i].bg;
+                wheelCtx.fill();
+
+                // Viền ngăn cách giữa các nan quạt
+                wheelCtx.strokeStyle = 'rgba(255, 117, 24, 0.4)';
+                wheelCtx.lineWidth = 2.5;
+                wheelCtx.stroke();
+
+                // Vẽ text tên món ăn (xoay hướng tâm từ ngoài vào trong)
+                wheelCtx.save();
+                wheelCtx.translate(center, center);
+                wheelCtx.rotate(sliceAngle + arc / 2);
+
+                wheelCtx.textAlign = 'right';
+                wheelCtx.fillStyle = foods[i].text;
+                wheelCtx.font = 'bold 24px "Quicksand", sans-serif';
+                
+                // Đổ bóng cho chữ trên vòng quay
+                wheelCtx.shadowColor = "rgba(0, 0, 0, 0.8)";
+                wheelCtx.shadowBlur = 4;
+
+                // Icon + Tên món
+                const textToDraw = foods[i].icon + ' ' + foods[i].name;
+                wheelCtx.fillText(textToDraw, radius - 30, 8);
+
+                wheelCtx.restore();
+            }
+
+            // Vành tròn viền ngoài sắc cam bí ngô
+            wheelCtx.beginPath();
+            wheelCtx.arc(center, center, radius, 0, 2 * Math.PI);
+            wheelCtx.strokeStyle = '#FF7518';
+            wheelCtx.lineWidth = 10;
+            wheelCtx.stroke();
+
+            // Vành tròn viền tím ma thuật ngoài cùng
+            wheelCtx.beginPath();
+            wheelCtx.arc(center, center, radius + 5, 0, 2 * Math.PI);
+            wheelCtx.strokeStyle = '#9D4EDD';
+            wheelCtx.lineWidth = 4;
+            wheelCtx.stroke();
+        }
+
+        function spinWheel() {
+            if (isSpinning) return;
+            isSpinning = true;
+
+            const centerBtn = document.getElementById('wheelCenterBtn');
+            const bottomBtn = document.getElementById('spinBtnBottom');
+            centerBtn.disabled = true;
+            bottomBtn.disabled = true;
+            bottomBtn.innerHTML = '<span>Đang quay... ⏳</span>';
+
+            // Chọn ngẫu nhiên 1 trong 9 món
+            const targetIndex = Math.floor(Math.random() * foods.length);
+            chosenFoodItem = foods[targetIndex];
+
+            const numSlices = foods.length;
+            const arc = (2 * Math.PI) / numSlices;
+
+            // Kim chỉ nằm ở đỉnh 12 giờ: tức góc 1.5 * PI (270 độ)
+            const targetJitter = (Math.random() - 0.5) * (arc * 0.55); // Độ lệch ngẫu nhiên nhẹ trong ô
+            let finalTargetOffset = (1.5 * Math.PI) - ((targetIndex + 0.5) * arc) + targetJitter;
+            
+            // Chuẩn hóa góc dương
+            while (finalTargetOffset < 0) {
+                finalTargetOffset += 2 * Math.PI;
+            }
+
+            // Quay từ 6 đến 8 vòng đầy đủ
+            const extraRotations = (6 + Math.floor(Math.random() * 3)) * 2 * Math.PI;
+            
+            // Tính toán góc đích
+            const startAngle = currentWheelAngle;
+            const currentMod = startAngle % (2 * Math.PI);
+            let diff = finalTargetOffset - currentMod;
+            if (diff < 0) diff += 2 * Math.PI;
+
+            const totalTargetAngle = startAngle + extraRotations + diff;
+            const duration = 4600; // 4.6 giây quay mượt mà
+            const startTime = performance.now();
+
+            function easeOutQuart(t) {
+                return 1 - Math.pow(1 - t, 4);
+            }
+
+            function animate(now) {
+                const elapsed = now - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = easeOutQuart(progress);
+
+                currentWheelAngle = startAngle + (totalTargetAngle - startAngle) * eased;
+                drawWheel(currentWheelAngle);
+
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    isSpinning = false;
+                    centerBtn.disabled = false;
+                    bottomBtn.disabled = false;
+                    bottomBtn.innerHTML = '<span>🎡 QUAY NGAY 🎃</span>';
+
+                    // Kết thúc quay -> Kích hoạt pháo hoa Halloween & Hiện Popup chúc mừng
+                    fireConfetti();
+                    setTimeout(() => {
+                        showFoodResult(chosenFoodItem);
+                    }, 500);
+                }
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        function showFoodResult(food) {
+            const badge = document.getElementById('chosenFoodBadge');
+            badge.innerHTML = `${food.name} ${food.icon}`;
+            openModal('foodResultModal');
+        }
+
+        function reSpinFromModal() {
+            closeAllModals();
+            setTimeout(() => {
+                openModal('wheelModal');
+                spinWheel();
+            }, 300);
+        }
+
+        function confirmFoodOrder() {
+            if (!chosenFoodItem) return;
+            const orderBtn = document.getElementById('confirmOrderBtn');
+            const originalText = orderBtn.innerHTML;
+            orderBtn.innerHTML = "Đang chốt... ⏳";
+            orderBtn.disabled = true;
+
+            const foodNameWithIcon = `${chosenFoodItem.name} ${chosenFoodItem.icon}`;
+            saveWish("Món ăn đã chốt hôm nay: " + foodNameWithIcon);
+
+            sendEmail("🍽️ EM YÊU ĐÃ CHỐT MÓN ĂN: " + foodNameWithIcon, () => {
+                orderBtn.innerHTML = originalText;
+                orderBtn.disabled = false;
+                closeAllModals();
+                fireConfetti();
+                setTimeout(() => openModal('successModal'), 400);
+            });
+        }
+
+        // --- CÁC HÀM QUẢN LÝ MODAL ---
+        function openModal(modalId) {
+            closeAllModals();
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeAllModals() {
+            document.querySelectorAll('.modal-overlay').forEach(modal => {
+                modal.classList.remove('active');
+            });
+        }
+    </script>
+</body>
+</html>
