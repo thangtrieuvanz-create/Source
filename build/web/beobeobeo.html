@@ -443,6 +443,65 @@
             text-shadow: 0 0 6px rgba(255, 183, 3, 0.4);
         }
 
+        /* FLOATING CỬA THẦN KỲ DORAEMON */
+        .floating-door-widget {
+            position: fixed;
+            bottom: 85px;
+            right: 25px;
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            background: rgba(28, 14, 46, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 6px 16px 6px 6px;
+            border-radius: 50px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.65), 0 0 18px rgba(255, 79, 129, 0.5);
+            border: 2px solid #FF4F81;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            user-select: none;
+            text-decoration: none;
+            animation: floatingDoorGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes floatingDoorGlow {
+            0% { transform: translateY(0); filter: drop-shadow(0 4px 8px rgba(255, 79, 129, 0.3)); }
+            100% { transform: translateY(-7px); filter: drop-shadow(0 8px 18px rgba(255, 79, 129, 0.7)) drop-shadow(0 0 12px rgba(255, 215, 0, 0.5)); }
+        }
+
+        .floating-door-widget:hover {
+            transform: translateY(-5px) scale(1.07);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8), 0 0 25px rgba(255, 79, 129, 0.85), 0 0 15px rgba(255, 215, 0, 0.6);
+            border-color: #FFD700;
+        }
+
+        .floating-door-icon-box {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #FF80AB 0%, #FF4F81 60%, #9D4EDD 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.5);
+            animation: doorWiggle 2.5s infinite ease-in-out;
+        }
+
+        @keyframes doorWiggle {
+            0%, 100% { transform: rotate(0); }
+            50% { transform: rotate(10deg); }
+        }
+
+        .floating-door-text {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #FF80AB;
+            letter-spacing: 0.3px;
+            text-shadow: 0 0 6px rgba(255, 79, 129, 0.5);
+        }
+
         /* Modal Overlay & Card Halloween */
         .modal-overlay {
             position: fixed;
@@ -1009,6 +1068,19 @@
             .floating-wheel-text {
                 font-size: 0.85rem;
             }
+            .floating-door-widget {
+                bottom: 74px;
+                right: 16px;
+                padding: 5px 12px 5px 5px;
+            }
+            .floating-door-icon-box {
+                width: 42px;
+                height: 42px;
+                font-size: 1.4rem;
+            }
+            .floating-door-text {
+                font-size: 0.85rem;
+            }
         }
     </style>
 </head>
@@ -1016,6 +1088,12 @@
 
     <!-- Canvas Halloween: Dơi bay lượn, bóng ma nhỏ & tàn lửa ma thuật -->
     <canvas id="halloweenCanvas"></canvas>
+
+    <!-- Cửa Thần Kỳ Nổi Ngoài Màn Hình Dẫn Đến Rạp Chiếu Phim -->
+    <a href="cuathanki.html" class="floating-door-widget" title="Cửa Thần Kỳ dẫn đến Rạp Chiếu Phim!">
+        <div class="floating-door-icon-box">🚪</div>
+        <span class="floating-door-text">Cửa Thần Kỳ 🎬</span>
+    </a>
 
     <!-- Icon nhỏ Vòng Quay nổi ngoài màn hình -->
     <div class="floating-wheel-widget" onclick="openWheelModal()" title="Vòng quay ma thuật Hôm nay ăn gì?">
@@ -1080,6 +1158,17 @@
                 <div class="voucher-icon">📜🧙‍♀️</div>
                 <div class="voucher-title">Nguyện Vọng Tự Chọn</div>
                 <button class="btn" onclick="openModal('customWishModal')">Viết thần chú ✍️</button>
+            </div>
+
+            <!-- Voucher 5: Cửa Thần Kỳ Đến Rạp Chiếu Phim -->
+            <div class="voucher-card" style="border-color: rgba(255, 79, 129, 0.55); box-shadow: 0 10px 28px rgba(0, 0, 0, 0.65), 0 0 20px rgba(255, 79, 129, 0.3);">
+                <div class="spooky-cap" style="background: linear-gradient(90deg, #FF4F81 0%, #FFD700 50%, #9D4EDD 100%);"></div>
+                <div class="spider-web-corner">🕸️</div>
+                <div class="hanging-spider">🕷️</div>
+                <div class="card-corner-deco">🎬</div>
+                <div class="voucher-icon" style="filter: drop-shadow(0 0 12px rgba(255, 79, 129, 0.6));">🚪✨🍿</div>
+                <div class="voucher-title" style="color: #FF80AB;">Cửa Thần Kỳ Đến Rạp Phim</div>
+                <a href="cuathanki.html" class="btn" style="background: linear-gradient(135deg, #FF4F81 0%, #D81B60 100%); color: white; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 15px rgba(255, 79, 129, 0.4);">Mở Cửa Thần Kỳ 🚪🍿</a>
             </div>
         </div>
 

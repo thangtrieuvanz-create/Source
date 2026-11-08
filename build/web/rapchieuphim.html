@@ -1,0 +1,2159 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rạp Chiếu Phim Của Thảo Béo - Thaobeo VIP Cinema 🎬🍿</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Playfair+Display:ital,wght@0,600;0,800;1,600&family=Quicksand:wght@500;600;700;800&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --cinema-bg: #09040e;
+            --cinema-floor: #11071c;
+            --screen-border: #1d112e;
+            --velvet-red: #9e0e24;
+            --velvet-red-dark: #630514;
+            --velvet-red-bright: #d91438;
+            --gold-accent: #FFB703;
+            --gold-light: #FFE082;
+            --gold-border: #D4AF37;
+            --aisle-light: #FF9E00;
+            --seat-shadow: rgba(0, 0, 0, 0.75);
+            --text-light: #F5EEFD;
+            --text-muted: #BCA8DA;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Quicksand', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--cinema-bg);
+            color: var(--text-light);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            user-select: none;
+            transition: background-color 0.8s ease;
+        }
+
+        /* Không gian phòng chiếu phim 3D (Cinema Hall) */
+        .cinema-auditorium {
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1.5rem 1rem 6rem;
+            background: radial-gradient(circle at 50% 25%, #180929 0%, #0c0517 55%, #05020a 100%);
+            perspective: 1200px;
+        }
+
+        /* Hiệu ứng tia sáng máy chiếu từ trên chiếu xuống màn hình (Projector Beam) */
+        .projector-beam {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            max-width: 950px;
+            height: 380px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 215, 0, 0.05) 50%, transparent 100%);
+            clip-path: polygon(42% 0%, 58% 0%, 100% 100%, 0% 100%);
+            filter: blur(14px);
+            pointer-events: none;
+            z-index: 2;
+            opacity: 0.85;
+            transition: opacity 0.8s ease;
+        }
+
+        /* Hạt bụi lơ lửng trong luồng sáng máy chiếu */
+        #dustCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 450px;
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        /* ========================================================
+           THANH ĐIỀU HƯỚNG ĐẦU RẠP (CINEMA TOP BAR)
+           ======================================================== */
+        .cinema-navbar {
+            width: 100%;
+            max-width: 1100px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 1.4rem;
+            background: rgba(23, 11, 38, 0.75);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 183, 3, 0.3);
+            border-radius: 20px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            z-index: 30;
+            flex-wrap: wrap;
+            gap: 12px;
+            transition: opacity 0.5s ease;
+        }
+
+        .cinema-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cinema-logo-icon {
+            font-size: 2rem;
+            filter: drop-shadow(0 0 10px #FFB703);
+            animation: bounceLogo 2.5s infinite ease-in-out;
+        }
+
+        @keyframes bounceLogo {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+
+        .cinema-logo-text {
+            font-family: 'Cinzel Decorative', cursive, sans-serif;
+            font-size: 1.25rem;
+            font-weight: 900;
+            background: linear-gradient(90deg, #FFD700 0%, #FF7518 50%, #FF4F81 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 1px;
+        }
+
+        .cinema-nav-buttons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .cinema-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1.5px solid rgba(255, 255, 255, 0.2);
+            color: #F5EEFD;
+            padding: 0.55rem 1.1rem;
+            border-radius: 14px;
+            font-size: 0.92rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .cinema-btn:hover {
+            background: rgba(255, 79, 129, 0.3);
+            border-color: #FF4F81;
+            color: #FFF;
+            transform: translateY(-2px);
+        }
+
+        .cinema-btn.active-light {
+            background: linear-gradient(135deg, #FFB703, #FF7518);
+            color: #170d29;
+            border: none;
+            box-shadow: 0 0 15px rgba(255, 183, 3, 0.6);
+        }
+
+        .cinema-btn-door {
+            border-color: #FF4F81;
+            color: #FF80AB;
+            background: rgba(255, 79, 129, 0.15);
+            text-decoration: none;
+        }
+
+        .cinema-btn-door:hover {
+            background: #FF4F81;
+            color: white;
+            box-shadow: 0 0 15px rgba(255, 79, 129, 0.6);
+        }
+
+        /* ========================================================
+           MÀN HÌNH CHIẾU PHIM KHỔNG LỒ (GRAND CINEMA SCREEN)
+           ======================================================== */
+        .screen-stage-area {
+            width: 100%;
+            max-width: 1020px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .screen-top-indicator {
+            text-align: center;
+            margin-bottom: 0.8rem;
+        }
+
+        .screen-badge {
+            display: inline-block;
+            font-size: 0.82rem;
+            font-weight: 800;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--gold-accent);
+            background: rgba(0, 0, 0, 0.5);
+            padding: 4px 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 183, 3, 0.35);
+            text-shadow: 0 0 8px rgba(255, 183, 3, 0.5);
+        }
+
+        .screen-movie-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #FFF;
+            margin-top: 4px;
+        }
+
+        .screen-movie-title span {
+            color: #FF80AB;
+        }
+
+        /* Khung màn hình cong rạp chiếu (Curved Projection Screen) */
+        .cinema-screen-frame {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            max-height: 520px;
+            background: #000;
+            border-radius: 14px;
+            border: 6px solid #1a0f29;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.95), 0 0 35px rgba(255, 79, 129, 0.25);
+            overflow: hidden;
+            transition: box-shadow 0.6s ease;
+        }
+
+        /* Ánh sáng ambient phản quang từ màn hình hắt ra nền */
+        .screen-glow-underlay {
+            position: absolute;
+            top: -20px;
+            left: -20px;
+            right: -20px;
+            bottom: -20px;
+            background: radial-gradient(circle, rgba(0, 240, 255, 0.2) 0%, rgba(255, 79, 129, 0.15) 50%, transparent 80%);
+            filter: blur(40px);
+            pointer-events: none;
+            z-index: 1;
+            transition: all 0.5s ease;
+        }
+
+        /* Rèm nhung đỏ hai bên sân khấu (Stage Red Velvet Curtains) */
+        .stage-curtain-left, .stage-curtain-right {
+            position: absolute;
+            top: 0;
+            width: 50%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                90deg,
+                #400000 0px,
+                #8B0000 20px,
+                #500000 40px,
+                #990000 60px
+            );
+            box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.9), 0 10px 20px rgba(0, 0, 0, 0.7);
+            z-index: 15;
+            transition: transform 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+        }
+
+        .stage-curtain-left {
+            left: 0;
+            border-right: 4px solid #FFD700;
+            transform-origin: left top;
+        }
+
+        .stage-curtain-right {
+            right: 0;
+            border-left: 4px solid #FFD700;
+            transform-origin: right top;
+        }
+
+        /* Trạng thái rèm mở */
+        .curtains-open .stage-curtain-left {
+            transform: scaleX(0.08) translateX(-50%);
+        }
+
+        .curtains-open .stage-curtain-right {
+            transform: scaleX(0.08) translateX(50%);
+        }
+
+        /* Viền rèm trang trí nóc màn chiếu */
+        .stage-valance {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 34px;
+            background: repeating-linear-gradient(90deg, #7A0000 0px, #B22222 25px, #500000 50px);
+            border-bottom: 3px solid #FFD700;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.8);
+            z-index: 16;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stage-valance span {
+            font-size: 0.85rem;
+            color: #FFD700;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.9);
+        }
+
+        /* Trình phát Video / Web Phim bên trong màn hình rạp */
+        #theaterVideo {
+            width: 100%;
+            height: 100%;
+            border: none;
+            position: relative;
+            z-index: 5;
+            border-radius: 8px;
+            background: #000;
+        }
+
+        /* Thanh công cụ phụ trên đỉnh màn chiếu */
+        .screen-quick-tools {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .screen-tool-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            color: #FFD700;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            text-decoration: none;
+        }
+
+        .screen-tool-btn:hover {
+            background: rgba(255, 79, 129, 0.35);
+            border-color: #FF4F81;
+            color: #FFF;
+            transform: translateY(-2px);
+        }
+
+        /* Banner nhắc nhở thân thiện khi chiếu web phim */
+        .web-movie-hint-box {
+            background: rgba(255, 117, 24, 0.2);
+            border: 1px dashed rgba(255, 183, 3, 0.5);
+            color: #FFE082;
+            padding: 6px 14px;
+            border-radius: 10px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            margin-top: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            max-width: 90%;
+        }
+
+        /* Bục sân khấu phía dưới màn hình (Cinema Stage Apron) */
+        .stage-apron {
+            width: 104%;
+            height: 24px;
+            background: linear-gradient(180deg, #2b113a 0%, #150621 100%);
+            border-top: 3px solid rgba(255, 215, 0, 0.4);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.9);
+            margin-top: -6px;
+            border-radius: 0 0 12px 12px;
+            z-index: 9;
+            position: relative;
+        }
+
+        .stage-apron-lights {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 30px;
+        }
+
+        .apron-light-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #FFD700;
+            box-shadow: 0 0 8px #FFD700;
+        }
+
+        /* ========================================================
+           HÀNG GHẾ RẠP CHIẾU PHIM (CINEMA SEATING ROWS)
+           ======================================================== */
+        .cinema-seating-auditorium {
+            width: 100%;
+            max-width: 960px;
+            margin-top: 2rem;
+            position: relative;
+            z-index: 15;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .seating-row-header {
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .seating-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--gold-accent);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .seating-hint {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* Một tầng bậc ghế (Tier Step) */
+        .cinema-tier-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            position: relative;
+            padding: 6px 14px;
+            border-radius: 12px;
+            background: linear-gradient(180deg, rgba(35, 15, 55, 0.4) 0%, rgba(15, 6, 25, 0.8) 100%);
+            border-bottom: 3px solid #08030f;
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.6);
+            width: 100%;
+        }
+
+        .row-label {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.35rem;
+            color: #FFB703;
+            width: 30px;
+            text-align: center;
+            text-shadow: 0 0 8px rgba(255, 183, 3, 0.5);
+        }
+
+        .seats-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        /* Chiếc ghế rạp chiếu phim nhung đỏ chân thực */
+        .cinema-seat {
+            position: relative;
+            width: 48px;
+            height: 56px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.25s ease, filter 0.25s ease;
+        }
+
+        .cinema-seat:hover {
+            transform: translateY(-5px) scale(1.1);
+        }
+
+        /* Lưng ghế đệm nhung đỏ */
+        .seat-back {
+            width: 38px;
+            height: 32px;
+            background: linear-gradient(180deg, var(--velvet-red-bright) 0%, var(--velvet-red) 60%, var(--velvet-red-dark) 100%);
+            border-radius: 8px 8px 3px 3px;
+            border: 2px solid #5a0412;
+            box-shadow: inset 0 2px 5px rgba(255, 255, 255, 0.3), 0 4px 10px rgba(0, 0, 0, 0.7);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Đường may đệm ghế */
+        .seat-back::after {
+            content: '';
+            position: absolute;
+            top: 4px;
+            bottom: 4px;
+            width: 1px;
+            background: rgba(0, 0, 0, 0.35);
+        }
+
+        .seat-number {
+            font-size: 0.65rem;
+            font-weight: 800;
+            color: #FFD700;
+            opacity: 0.9;
+        }
+
+        /* Đệm ngồi gập phía dưới */
+        .seat-bottom {
+            width: 44px;
+            height: 18px;
+            background: linear-gradient(180deg, var(--velvet-red) 0%, #45030c 100%);
+            border-radius: 4px 4px 8px 8px;
+            border: 2px solid #38020a;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
+            margin-top: -2px;
+            z-index: 2;
+        }
+
+        /* Tay vịn hai bên ghế có chỗ để cốc */
+        .seat-armrest-left, .seat-armrest-right {
+            position: absolute;
+            top: 14px;
+            width: 5px;
+            height: 26px;
+            background: #1c1424;
+            border-radius: 3px;
+            box-shadow: 1px 1px 4px rgba(0,0,0,0.8);
+        }
+
+        .seat-armrest-left { left: 0; }
+        .seat-armrest-right { right: 0; }
+
+        /* Ghế đã chọn / Đang ngồi */
+        .cinema-seat.selected .seat-back {
+            background: linear-gradient(180deg, #FFB703 0%, #FF7518 100%);
+            border-color: #FFD700;
+            box-shadow: 0 0 15px rgba(255, 183, 3, 0.8);
+        }
+
+        .cinema-seat.selected .seat-bottom {
+            background: linear-gradient(180deg, #FF7518 0%, #b34e00 100%);
+        }
+
+        .cinema-seat.selected .seat-number {
+            color: #000;
+        }
+
+        /* ========================================================
+           HÀNG GHẾ VIP SWEETBOX ĐÔI (CHO THẢO BÉO & THẮNG)
+           ======================================================== */
+        .sweetbox-row-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .sweetbox-couch {
+            background: linear-gradient(180deg, #b80c29 0%, #80071c 50%, #4a030f 100%);
+            border: 3.5px solid #FFD700;
+            border-radius: 28px 28px 14px 14px;
+            padding: 1.2rem 2.4rem 1.6rem;
+            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.9), 0 0 25px rgba(255, 79, 129, 0.45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+            position: relative;
+            max-width: 560px;
+            width: 92%;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .sweetbox-couch:hover {
+            transform: scale(1.03);
+            box-shadow: 0 22px 55px rgba(0, 0, 0, 0.95), 0 0 35px rgba(255, 183, 3, 0.6);
+        }
+
+        /* Biển tên đúc vàng gắn trên ghế Sweetbox */
+        .sweetbox-badge-gold {
+            position: absolute;
+            top: -15px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #B8860B 100%);
+            color: #210a00;
+            font-size: 0.85rem;
+            font-weight: 900;
+            padding: 5px 20px;
+            border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6), 0 0 10px rgba(255, 215, 0, 0.5);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .sweetbox-couple-info {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .couple-heart-pillow {
+            font-size: 2.5rem;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.6));
+            animation: heartPulse 2.8s infinite ease-in-out alternate;
+        }
+
+        @keyframes heartPulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.12) rotate(6deg); }
+        }
+
+        .couple-names {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #FFFFFF;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
+        }
+
+        .couple-subtitle {
+            font-size: 0.82rem;
+            color: #FFD700;
+            font-weight: 700;
+        }
+
+        /* Khay bắp nước cạnh ghế Sweetbox */
+        .sweetbox-concession-tray {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.45);
+            padding: 8px 16px;
+            border-radius: 16px;
+            border: 1.5px dashed rgba(255, 215, 0, 0.5);
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .sweetbox-concession-tray:hover {
+            transform: scale(1.08);
+            background: rgba(255, 79, 129, 0.35);
+            border-color: #FF4F81;
+        }
+
+        .tray-popcorn-icon {
+            font-size: 1.8rem;
+            animation: bouncePopcorn 2s infinite ease-in-out;
+        }
+
+        @keyframes bouncePopcorn {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .tray-text-wrap {
+            text-align: left;
+        }
+
+        .tray-title {
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: #FFD700;
+        }
+
+        .tray-action {
+            font-size: 0.72rem;
+            color: #FF80AB;
+            font-weight: 700;
+        }
+
+        /* Lối đi rạp chiếu phim có thảm & đèn LED bậc thang */
+        .cinema-aisle-pathway {
+            width: 100%;
+            max-width: 960px;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 40px;
+            margin-top: -10px;
+            pointer-events: none;
+        }
+
+        .aisle-step-light {
+            font-size: 0.75rem;
+            color: var(--aisle-light);
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-shadow: 0 0 8px var(--aisle-light);
+            opacity: 0.85;
+        }
+
+        /* ========================================================
+           BỘ CHỌN PHIM & NHẬP LINK YOUTUBE (MOVIE SELECTOR)
+           ======================================================== */
+        .movie-control-panel {
+            width: 100%;
+            max-width: 1020px;
+            margin-top: 3rem;
+            background: linear-gradient(160deg, #1d0f30 0%, #10061e 100%);
+            border-radius: 24px;
+            padding: 1.8rem 1.6rem;
+            border: 1px solid rgba(255, 183, 3, 0.3);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.75);
+            z-index: 20;
+            transition: opacity 0.5s ease;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.2rem;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .panel-heading {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: #FFA500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Ô dán link YouTube */
+        .youtube-input-group {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            margin-bottom: 1.5rem;
+        }
+
+        .youtube-url-field {
+            flex: 1;
+            background: #0a0414;
+            border: 2px solid rgba(157, 78, 221, 0.4);
+            border-radius: 14px;
+            padding: 0.8rem 1.2rem;
+            color: #FFF;
+            font-size: 0.95rem;
+            font-weight: 600;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .youtube-url-field:focus {
+            border-color: #FF4F81;
+            box-shadow: 0 0 15px rgba(255, 79, 129, 0.4);
+        }
+
+        .btn-play-custom {
+            background: linear-gradient(135deg, #FF4F81 0%, #D81B60 100%);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            padding: 0 1.6rem;
+            font-weight: 800;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .btn-play-custom:hover {
+            transform: scale(1.04);
+            box-shadow: 0 6px 20px rgba(255, 79, 129, 0.6);
+        }
+
+        /* Tabs Album phim */
+        .album-filter-tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 1.4rem;
+            flex-wrap: wrap;
+        }
+
+        .album-tab-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1.5px solid rgba(255, 183, 3, 0.3);
+            color: #F5EEFD;
+            padding: 0.6rem 1.4rem;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .album-tab-btn:hover {
+            background: rgba(255, 183, 3, 0.2);
+            border-color: #FFB703;
+            color: #FFD700;
+            transform: translateY(-2px);
+        }
+
+        .album-tab-btn.active {
+            background: linear-gradient(135deg, #FFB703 0%, #FF7518 100%);
+            color: #170d29;
+            border-color: #FFD700;
+            box-shadow: 0 4px 15px rgba(255, 183, 3, 0.5);
+        }
+
+        /* Grid các bộ phim tuyển chọn */
+        .movie-playlist-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
+            gap: 1.2rem;
+        }
+
+        .playlist-movie-item {
+            background: rgba(43, 20, 69, 0.6);
+            border: 2px solid rgba(255, 183, 3, 0.2);
+            border-radius: 16px;
+            padding: 1.1rem 0.9rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .playlist-movie-item:hover {
+            transform: translateY(-6px);
+            border-color: #FF4F81;
+            background: rgba(68, 30, 110, 0.85);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6), 0 0 15px rgba(255, 79, 129, 0.4);
+        }
+
+        .playlist-movie-item.active-playing {
+            border-color: #FFB703;
+            background: linear-gradient(160deg, rgba(255, 183, 3, 0.25) 0%, rgba(43, 20, 69, 0.9) 100%);
+            box-shadow: 0 0 20px rgba(255, 183, 3, 0.5);
+        }
+
+        .movie-item-poster {
+            font-size: 2.6rem;
+            margin-bottom: 0.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .playlist-movie-item:hover .movie-item-poster {
+            transform: scale(1.15) rotate(6deg);
+        }
+
+        .movie-item-name {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #FFF;
+            margin-bottom: 0.3rem;
+            line-height: 1.3;
+        }
+
+        .movie-item-genre {
+            font-size: 0.75rem;
+            color: #FFD700;
+            font-weight: 700;
+            background: rgba(0, 0, 0, 0.35);
+            padding: 3px 10px;
+            border-radius: 10px;
+        }
+
+        /* Nút gọi bắp nước & vé cuối trang */
+        .bottom-cinema-actions {
+            width: 100%;
+            max-width: 1020px;
+            margin-top: 2rem;
+            display: flex;
+            justify-content: center;
+            gap: 1.2rem;
+            flex-wrap: wrap;
+            z-index: 20;
+            transition: opacity 0.5s ease;
+        }
+
+        .btn-action-pill {
+            background: linear-gradient(135deg, #FF7518 0%, #E63946 100%);
+            color: #FFF;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 35px;
+            font-size: 1.05rem;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(255, 117, 24, 0.45);
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-action-pill:hover {
+            transform: translateY(-4px) scale(1.04);
+            box-shadow: 0 10px 30px rgba(255, 117, 24, 0.7);
+        }
+
+        .btn-pill-purple {
+            background: linear-gradient(135deg, #9D4EDD 0%, #5A189A 100%);
+            box-shadow: 0 6px 20px rgba(157, 78, 221, 0.45);
+        }
+
+        .btn-pill-purple:hover {
+            box-shadow: 0 10px 30px rgba(157, 78, 221, 0.7);
+        }
+
+        .btn-pill-door {
+            background: linear-gradient(135deg, #FF4F81 0%, #D81B60 100%);
+            box-shadow: 0 6px 20px rgba(255, 79, 129, 0.45);
+            text-decoration: none;
+        }
+
+        .btn-pill-door:hover {
+            box-shadow: 0 10px 30px rgba(255, 79, 129, 0.7);
+        }
+
+        /* ========================================================
+           CHẾ ĐỘ RẠP PHIM TỐI ĐÈN (CINEMA DARK MODE)
+           ======================================================== */
+        body.lights-turned-off {
+            background-color: #020104 !important;
+        }
+
+        body.lights-turned-off .cinema-auditorium {
+            background: radial-gradient(circle at 50% 20%, #0d0417 0%, #040108 70%, #000000 100%) !important;
+        }
+
+        body.lights-turned-off .cinema-navbar,
+        body.lights-turned-off .movie-control-panel,
+        body.lights-turned-off .bottom-cinema-actions,
+        body.lights-turned-off .seating-row-header {
+            opacity: 0.12;
+        }
+
+        body.lights-turned-off .cinema-navbar:hover,
+        body.lights-turned-off .movie-control-panel:hover,
+        body.lights-turned-off .bottom-cinema-actions:hover {
+            opacity: 0.95;
+        }
+
+        body.lights-turned-off .cinema-screen-frame {
+            box-shadow: 0 0 80px rgba(0, 240, 255, 0.6), 0 0 130px rgba(255, 79, 129, 0.4);
+        }
+
+        body.lights-turned-off .projector-beam {
+            opacity: 1;
+            filter: blur(10px);
+        }
+
+        /* ========================================================
+           MODALS (BẮP NƯỚC & VÉ XEM PHIM & THÔNG BÁO)
+           ======================================================== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(4, 1, 8, 0.88);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 500;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.35s ease;
+            padding: 1rem;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-card {
+            background: linear-gradient(160deg, #241438 0%, #130722 100%);
+            border: 2px solid rgba(255, 183, 3, 0.4);
+            border-radius: 24px;
+            padding: 2.2rem 1.8rem;
+            max-width: 480px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95), 0 0 30px rgba(255, 79, 129, 0.35);
+            transform: translateY(20px) scale(0.95);
+            transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.active .modal-card {
+            transform: translateY(0) scale(1);
+        }
+
+        .modal-title {
+            font-size: 1.55rem;
+            font-weight: 800;
+            color: #FFB703;
+            margin-bottom: 0.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .modal-desc {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 1.4rem;
+        }
+
+        /* Tùy chọn bắp nước */
+        .concession-section-label {
+            text-align: left;
+            font-weight: 800;
+            color: #FF80AB;
+            font-size: 1rem;
+            margin: 1.1rem 0 0.5rem;
+        }
+
+        .concession-chips-wrap {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 0.8rem;
+        }
+
+        .concession-chip {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1.5px solid rgba(255, 255, 255, 0.2);
+            color: #FFF;
+            padding: 0.55rem 0.95rem;
+            border-radius: 12px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .concession-chip:hover {
+            border-color: #FF4F81;
+            background: rgba(255, 79, 129, 0.2);
+        }
+
+        .concession-chip.selected {
+            background: linear-gradient(135deg, #FF7518, #FFB703);
+            color: #150624;
+            border-color: #FFD700;
+            font-weight: 800;
+            box-shadow: 0 0 12px rgba(255, 183, 3, 0.5);
+        }
+
+        .concession-textarea {
+            width: 100%;
+            background: #090312;
+            border: 1.5px solid rgba(157, 78, 221, 0.4);
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            color: #FFF;
+            font-size: 0.9rem;
+            outline: none;
+            resize: none;
+            margin-top: 0.4rem;
+        }
+
+        .concession-textarea:focus {
+            border-color: #FF7518;
+        }
+
+        /* Vé xem phim cổ điển */
+        .retro-ticket-view {
+            background: linear-gradient(135deg, #2b113a 0%, #160724 100%);
+            border: 2px dashed #FFD700;
+            border-radius: 18px;
+            padding: 1.6rem 1.4rem;
+            text-align: left;
+            position: relative;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.8);
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+
+        .ticket-hole-left, .ticket-hole-right {
+            position: absolute;
+            top: 50%;
+            width: 24px;
+            height: 24px;
+            background: #241438;
+            border-radius: 50%;
+            transform: translateY(-50%);
+            z-index: 2;
+        }
+
+        .ticket-hole-left { left: -12px; }
+        .ticket-hole-right { right: -12px; }
+
+        .retro-ticket-header {
+            border-bottom: 1px dashed rgba(255, 215, 0, 0.4);
+            padding-bottom: 0.8rem;
+            margin-bottom: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ticket-logo-text {
+            font-family: 'Cinzel Decorative', cursive, sans-serif;
+            font-size: 1.1rem;
+            font-weight: 900;
+            color: #FFD700;
+        }
+
+        .ticket-badge-tag {
+            background: #FF4F81;
+            color: white;
+            font-size: 0.72rem;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+
+        .ticket-info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.88rem;
+        }
+
+        .ticket-field-label {
+            color: #BCA8DA;
+        }
+
+        .ticket-field-val {
+            color: #FFF;
+            font-weight: 700;
+        }
+
+        .ticket-barcode-lines {
+            margin-top: 1rem;
+            text-align: center;
+            font-family: monospace;
+            font-size: 1.5rem;
+            letter-spacing: 5px;
+            color: #FFD700;
+            opacity: 0.85;
+        }
+
+        /* Nút modal */
+        .btn-modal-dismiss {
+            background: rgba(255, 255, 255, 0.12);
+            border: none;
+            color: #DDD;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-modal-dismiss:hover {
+            background: rgba(255, 255, 255, 0.22);
+            color: #FFF;
+        }
+
+        .btn-modal-confirm {
+            background: linear-gradient(135deg, #FF7518 0%, #E63946 100%);
+            border: none;
+            color: white;
+            padding: 0.75rem 1.8rem;
+            border-radius: 25px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 4px 18px rgba(255, 117, 24, 0.45);
+            transition: all 0.2s ease;
+        }
+
+        .btn-modal-confirm:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 24px rgba(255, 117, 24, 0.65);
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .cinema-seat {
+                width: 40px;
+                height: 50px;
+            }
+            .seat-back {
+                width: 32px;
+                height: 28px;
+            }
+            .seat-bottom {
+                width: 36px;
+                height: 16px;
+            }
+            .sweetbox-couch {
+                padding: 1rem 1.2rem;
+                gap: 12px;
+            }
+            .couple-names {
+                font-size: 1.05rem;
+            }
+            .movie-playlist-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Canvas hạt bụi bay trong luồng chiếu máy chiếu -->
+    <canvas id="dustCanvas"></canvas>
+
+    <div class="cinema-auditorium" id="auditorium">
+        
+        <!-- Luồng sáng máy chiếu hắt từ đỉnh xuống màn hình -->
+        <div class="projector-beam" id="projectorBeam"></div>
+
+        <!-- Thanh điều hướng đầu rạp -->
+        <header class="cinema-navbar">
+            <div class="cinema-logo">
+                <span class="cinema-logo-icon">🚪🎬</span>
+                <div>
+                    <h1 class="cinema-logo-text">THAOBEO VIP CINEMA</h1>
+                    <small style="color: var(--text-muted); font-size: 0.78rem;">Rạp Chiếu Phim Cửa Thần Kỳ Dành Riêng Cho Em</small>
+                </div>
+            </div>
+
+            <div class="cinema-nav-buttons">
+                <button class="cinema-btn" id="btnToggleLights" onclick="toggleCinemaLighting()">
+                    <span id="lightIcon">💡</span> <span id="lightText">Tắt Đèn Rạp</span>
+                </button>
+                <button class="cinema-btn" onclick="toggleCurtains()">
+                    <span>🎭</span> Rèm Nhung
+                </button>
+                <button class="cinema-btn" onclick="openTicketModal()">
+                    <span>🎟️</span> Vé VIP
+                </button>
+                <button class="cinema-btn" onclick="openConcessionModal()">
+                    <span>🍿</span> Gọi Bắp Nước
+                </button>
+                <a href="cuathanki.html" class="cinema-btn cinema-btn-door">
+                    <span>🚪</span> Cửa Thần Kỳ
+                </a>
+                <a href="beobeobeo.html" class="cinema-btn" style="text-decoration: none;">
+                    <span>🏠</span> Trang Cứu Cánh
+                </a>
+            </div>
+        </header>
+
+
+        <!-- ========================================================
+             MÀN HÌNH CHIẾU PHIM KHỔNG LỒ (THE BIG SCREEN)
+             ======================================================== -->
+        <section class="screen-stage-area">
+            <div class="screen-top-indicator">
+                <div class="screen-badge">★ GRAND CINEMA SCREEN • FULL CHIẾU RẠP MOTCHILL ★</div>
+                <div class="screen-movie-title">Đang Chiếu: <span id="currentMovieName">Minion Cắt Cỏ (Mower Minions Full Thuyết Minh) 🍌🌱</span></div>
+                
+                <div class="screen-quick-tools">
+                    <button class="screen-tool-btn" onclick="toggleFullscreenScreen()" title="Toàn màn hình rạp chiếu">
+                        <span>↔️</span> Toàn Màn Hình
+                    </button>
+                    <button class="screen-tool-btn" onclick="reloadCurrentMovie()" title="Tải lại cuộn phim đang phát">
+                        <span>🔄</span> Tải Lại Phim
+                    </button>
+                </div>
+
+                <div class="web-movie-hint-box" id="webMovieHint">
+                    <span>🍌</span> <span>Đang chiếu: <b>Minion Cắt Cỏ (Bản Full Thuyết Minh Chuẩn Motchill)</b>. Bấm Play trên màn hình để xem nhé!</span>
+                </div>
+            </div>
+
+            <div class="cinema-screen-frame curtains-open" id="screenFrame">
+                <div class="screen-glow-underlay"></div>
+
+                <!-- Rèm nhung đỏ sang trọng hai bên -->
+                <div class="stage-curtain-left"></div>
+                <div class="stage-curtain-right"></div>
+                <div class="stage-valance">
+                    <span>★ THAOBEO SWEETBOX CINEMA ★</span>
+                </div>
+
+                <!-- Màn hình chiếu phim rạp VIP: Trình phát Motchill JWPlayer chuẩn không bị chặn -->
+                <iframe id="theaterVideo" 
+                        src="https://player.phimapi.com/player/?url=https://s2.phim1280.tv/20231223/D9ipNTi4/index.m3u8" 
+                        title="Thaobeo Cinema Screen"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen" 
+                        allowfullscreen>
+                </iframe>
+
+                <!-- Hiệu ứng nạp cuộn phim rạp chiếu -->
+                <div id="screenLoaderOverlay" style="display: none; position: absolute; inset: 0; z-index: 8; background: rgba(10, 4, 18, 0.92); flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: #FFD700;">
+                    <div style="font-size: 3rem; animation: bouncePopcorn 1.5s infinite ease-in-out;">🎞️📽️🍿</div>
+                    <div id="screenLoaderText" style="font-size: 1.05rem; font-weight: 700; color: #FFE082;">Đang nạp cuộn phim Motchill vào máy chiếu rạp...</div>
+                </div>
+            </div>
+
+            <!-- Bục sân khấu rạp chiếu với dải đèn LED -->
+            <div class="stage-apron">
+                <div class="stage-apron-lights">
+                    <div class="apron-light-dot"></div>
+                    <div class="apron-light-dot"></div>
+                    <div class="apron-light-dot"></div>
+                    <div class="apron-light-dot"></div>
+                    <div class="apron-light-dot"></div>
+                    <div class="apron-light-dot"></div>
+                    <div class="apron-light-dot"></div>
+                    <div class="apron-light-dot"></div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ========================================================
+             CÁC HÀNG GHẾ RẠP CHIẾU PHIM (CINEMA SEATS)
+             ======================================================== -->
+        <section class="cinema-seating-auditorium">
+            
+            <div class="seating-row-header">
+                <div class="seating-title">
+                    <span>💺</span> Các Hàng Ghế Rạp Chiếu Phim
+                </div>
+                <p class="seating-hint">Chạm vào ghế bất kỳ để chọn vị trí ngồi xem phim nhé!</p>
+            </div>
+
+            <!-- Hàng A (Gần màn hình) -->
+            <div class="cinema-tier-row">
+                <div class="row-label">A</div>
+                <div class="seats-group">
+                    <div class="cinema-seat" onclick="selectCinemaSeat(this, 'A1')">
+                        <div class="seat-back"><span class="seat-number">01</span></div>
+                        <div class="seat-bottom"></div>
+                        <div class="seat-armrest-left"></div>
+                        <div class="seat-armrest-right"></div>
+                    </div>
+                    <div class="cinema-seat" onclick="selectCinemaSeat(this, 'A2')">
+                        <div class="seat-back"><span class="seat-number">02</span></div>
+                        <div class="seat-bottom"></div>
+                        <div class="seat-armrest-left"></div>
+                        <div class="seat-armrest-right"></div>
+                    </div>
+                    <div class="cinema-seat" onclick="selectCinemaSeat(this, 'A3')">
+                        <div class="seat-back"><span class="seat-number">03</span></div>
+                        <div class="seat-bottom"></div>
+                        <div class="seat-armrest-left"></div>
+                        <div class="seat-armrest-right"></div>
+                    </div>
+                    <div class="cinema-seat" onclick="selectCinemaSeat(this, 'A4')">
+                        <div class="seat-back"><span class="seat-number">04</span></div>
+                        <div class="seat-bottom"></div>
+                        <div class="seat-armrest-left"></div>
+                        <div class="seat-armrest-right"></div>
+                    </div>
+                    <div class="cinema-seat" onclick="selectCinemaSeat(this, 'A5')">
+                        <div class="seat-back"><span class="seat-number">05</span></div>
+                        <div class="seat-bottom"></div>
+                        <div class="seat-armrest-left"></div>
+                        <div class="seat-armrest-right"></div>
+                    </div>
+                    <div class="cinema-seat" onclick="selectCinemaSeat(this, 'A6')">
+                        <div class="seat-back"><span class="seat-number">06</span></div>
+                        <div class="seat-bottom"></div>
+                        <div class="seat-armrest-left"></div>
+                        <div class="seat-armrest-right"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hàng B (Trung tâm) -->
+            <div class="cinema-tier-row">
+                <div class="row-label">B</div>
+                <div class="seats-group">
+                    <div class="cinema-seat" onclick="selectCinemaSeat(this, 'B1')">
+                        <div class="seat-back"><span class="seat-number">01</span></div>
+                        <div class="seat-bottom"></div>
+                        <div class="seat-armrest-left"></div>
+                        <div class="seat-armrest-right"></div>
+                    </div>
+                    <div class="cinema-seat" onclick="selectCinemaSeat(this, 'B2')">
+                        <div class="seat-back"><span class="seat-number">02</span></div>
+                        <div class="seat-bottom"></div>
+                        <div class="seat-armrest-left"></div>
+                        <div class="seat-armrest-right"></div>
+                    </div>
+                    <div class="cinema-seat" onclick="selectCinemaSeat(this, 'B3')">
+                        <div class="seat-back"><span class="seat-number">03</span></div>
+                        <div class="seat-bottom"></div>
+                        <div class="seat-armrest-left"></div>
+                        <div class="seat-armrest-right"></div>
+                    </div>
+                    <div class="cinema-seat" onclick="selectCinemaSeat(this, 'B4')">
+                        <div class="seat-back"><span class="seat-number">04</span></div>
+                        <div class="seat-bottom"></div>
+                        <div class="seat-armrest-left"></div>
+                        <div class="seat-armrest-right"></div>
+                    </div>
+                    <div class="cinema-seat" onclick="selectCinemaSeat(this, 'B5')">
+                        <div class="seat-back"><span class="seat-number">05</span></div>
+                        <div class="seat-bottom"></div>
+                        <div class="seat-armrest-left"></div>
+                        <div class="seat-armrest-right"></div>
+                    </div>
+                    <div class="cinema-seat" onclick="selectCinemaSeat(this, 'B6')">
+                        <div class="seat-back"><span class="seat-number">06</span></div>
+                        <div class="seat-bottom"></div>
+                        <div class="seat-armrest-left"></div>
+                        <div class="seat-armrest-right"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hàng Ghế Đôi VIP SWEETBOX Đỉnh Cao -->
+            <div class="sweetbox-row-container">
+                <div class="sweetbox-couch" onclick="selectSweetboxSeat()">
+                    <div class="sweetbox-badge-gold">★ VIP SWEETBOX 01 ★</div>
+
+                    <div class="sweetbox-couple-info">
+                        <div class="couple-heart-pillow">❤️</div>
+                        <div>
+                            <div class="couple-names">Thảo Béo & Thắng</div>
+                            <div class="couple-subtitle">Vị trí trung tâm lãng mạn nhất rạp 🥰</div>
+                        </div>
+                    </div>
+
+                    <!-- Khay bắp nước cạnh ghế -->
+                    <div class="sweetbox-concession-tray" onclick="event.stopPropagation(); openConcessionModal();" title="Bấm để gọi bắp rang bơ & trà sữa!">
+                        <div class="tray-popcorn-icon">🍿🥤</div>
+                        <div class="tray-text-wrap">
+                            <div class="tray-title">Bắp & Nước</div>
+                            <div class="tray-action">Gọi anh phục vụ 🛎️</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Đèn LED lối đi rạp chiếu phim -->
+            <div class="cinema-aisle-pathway">
+                <span class="aisle-step-light">◄ LỐI ĐI RẠP 01</span>
+                <span class="aisle-step-light">LỐI ĐI RẠP 02 ►</span>
+            </div>
+
+        </section>
+
+
+        <!-- ========================================================
+             BỘ CHỌN PHIM & ALBUM VŨ TRỤ MINIONS CHIẾU RẠP MOTCHILL
+             ======================================================== -->
+        <section class="movie-control-panel">
+            <div class="panel-header">
+                <h3 class="panel-heading">
+                    <span>🎬</span> Bảng Chọn Phim Rạp Cửa Thần Kỳ
+                </h3>
+                <small style="color: #BCA8DA;">Trọn bộ Album Minions & Đồng Bọn chiếu trực tiếp Motchill Full HD!</small>
+            </div>
+
+            <!-- Ô dán link phim Motchill hoặc phim bất kỳ 2-3 tiếng -->
+            <div class="youtube-input-group">
+                <input type="text" id="customVideoInput" class="youtube-url-field" placeholder="Dán link phim Motchill (vd: https://motchiller.ws/phim/minions-more-volume-1...) hoặc link phim 2-3 tiếng bất kỳ">
+                <button class="btn-play-custom" onclick="playCustomMovie()">Chiếu Lên Rạp 🎬</button>
+            </div>
+
+            <!-- Thanh chuyển Album phim -->
+            <div class="album-filter-tabs">
+                <button class="album-tab-btn active" id="tabMinions" onclick="switchAlbum('minions')">
+                    <span>🍌</span> Album: Vũ Trụ Minions (6 Phim Cực Hài)
+                </button>
+                <button class="album-tab-btn" id="tabDoraemon" onclick="switchAlbum('doraemon')">
+                    <span>🐱</span> Album: Doraemon & Tuổi Thơ
+                </button>
+            </div>
+
+            <!-- Grid 1: Album Minions (Trọn bộ 6 siêu phẩm Minions) -->
+            <div class="movie-playlist-grid" id="albumGridMinions">
+                
+                <!-- Phim 1: Minion Cắt Cỏ (Bản Chuẩn Thuyết Minh Motchill) -->
+                <div class="playlist-movie-item active-playing" onclick="playDirectStream(this, 'https://player.phimapi.com/player/?url=https://s2.phim1280.tv/20231223/D9ipNTi4/index.m3u8', 'Minion Cắt Cỏ (Mower Minions Thuyết Minh) 🍌🌱', 'minion-cat-co')">
+                    <div class="movie-item-poster">🍌🌱</div>
+                    <div class="movie-item-name">Minion Cắt Cỏ</div>
+                    <div class="movie-item-genre" style="background: rgba(255, 183, 3, 0.35); color: #FFD700;">Full Thuyết Minh Chuẩn</div>
+                </div>
+
+                <!-- Phim 2: Minions & More Volume 1 (Link người dùng gửi) -->
+                <div class="playlist-movie-item" onclick="playDirectStream(this, 'https://player.phimapi.com/player/?url=https://s2.phim1280.tv/20231212/Q9wgVO18/index.m3u8', 'Minions & More Volume 1 (Minions & Đồng Bọn Tập 1) 🍌🎉', 'minions-more-volume-1')">
+                    <div class="movie-item-poster">🍌🎉</div>
+                    <div class="movie-item-name">Minions & More Vol 1</div>
+                    <div class="movie-item-genre" style="background: rgba(255, 79, 129, 0.35); color: #FF80AB;">Tập Hợp Phim Ngắn (48 Phút)</div>
+                </div>
+
+                <!-- Phim 3: Minions: Sự Trỗi Dậy Của Gru (Full 87 Phút) -->
+                <div class="playlist-movie-item" onclick="playDirectStream(this, 'https://player.phimapi.com/player/?url=https://s5.phim1280.tv/20250516/qGQRGvEB/index.m3u8', 'Minions: Sự Trỗi Dậy Của Gru (Full 87 Phút) 🍌🚀', 'minions-su-troi-day-cua-gru')">
+                    <div class="movie-item-poster">🍌🚀</div>
+                    <div class="movie-item-name">Minions: Sự Trỗi Dậy Gru</div>
+                    <div class="movie-item-genre" style="background: rgba(255, 183, 3, 0.35); color: #FFD700;">Full Chiếu Rạp (87 Phút)</div>
+                </div>
+
+                <!-- Phim 4: Minions 2015: Đi Tìm Đại Ác Nhân (Lồng Tiếng 91 Phút) -->
+                <div class="playlist-movie-item" onclick="playDirectStream(this, 'https://player.phimapi.com/player/?url=https://s5.phim1280.tv/20250516/iVpBkX9N/index.m3u8', 'Minions (2015): Đi Tìm Đại Ác Nhân (Lồng Tiếng 91 Phút) 🍌👑', 'minions')">
+                    <div class="movie-item-poster">🍌👑</div>
+                    <div class="movie-item-name">Minions (2015)</div>
+                    <div class="movie-item-genre" style="background: rgba(0, 240, 255, 0.25); color: #00F0FF;">Bản Lồng Tiếng (91 Phút)</div>
+                </div>
+
+                <!-- Phim 5: Kẻ Trộm Mặt Trăng 4 (Despicable Me 4 - Full 94 Phút) -->
+                <div class="playlist-movie-item" onclick="playDirectStream(this, 'https://player.phimapi.com/player/?url=https://s5.phim1280.tv/20250516/nJYxo0kr/index.m3u8', 'Kẻ Trộm Mặt Trăng 4 - Despicable Me 4 (Full 94 Phút) 🌙👨‍👧‍👦', 'ke-trom-mat-trang-4')">
+                    <div class="movie-item-poster">🌙👨‍👧‍👦</div>
+                    <div class="movie-item-name">Kẻ Trộm Mặt Trăng 4</div>
+                    <div class="movie-item-genre" style="background: rgba(255, 79, 129, 0.35); color: #FF80AB;">Siêu Minion Mega (94 Phút)</div>
+                </div>
+
+                <!-- Phim 6: Kẻ Trộm Mặt Trăng 3 (Despicable Me 3 - Full 90 Phút) -->
+                <div class="playlist-movie-item" onclick="playDirectStream(this, 'https://player.phimapi.com/player/?url=https://s5.phim1280.tv/20250516/3T2rcjnD/index.m3u8', 'Kẻ Trộm Mặt Trăng 3 - Despicable Me 3 (Full 90 Phút) 🧀🍌', 'ke-trom-mat-trang-3')">
+                    <div class="movie-item-poster">🧀🍌</div>
+                    <div class="movie-item-name">Kẻ Trộm Mặt Trăng 3</div>
+                    <div class="movie-item-genre" style="background: rgba(157, 78, 221, 0.35); color: #E0AAFF;">Minion Vượt Ngục (90 Phút)</div>
+                </div>
+
+            </div>
+
+            <!-- Grid 2: Album Doraemon (Ẩn mặc định, bật khi chọn tab) -->
+            <div class="movie-playlist-grid" id="albumGridDoraemon" style="display: none;">
+                <!-- Phim 1: Doraemon Bản Giao Hưởng Địa Cầu -->
+                <div class="playlist-movie-item" onclick="playDirectStream(this, 'https://player.phimapi.com/player/?url=https://s4.phim1280.tv/20250521/aF909VX2/index.m3u8', 'Doraemon: Bản Giao Hưởng Địa Cầu (Full 115 Phút) 🐱🎵', 'doraemon-nobita-va-ban-giao-huong-dia-cau')">
+                    <div class="movie-item-poster">🐱🎵</div>
+                    <div class="movie-item-name">Doraemon: Bản Giao Hưởng</div>
+                    <div class="movie-item-genre" style="background: rgba(0, 240, 255, 0.25); color: #00F0FF;">Full Rạp 2 Tiếng (115 Phút)</div>
+                </div>
+
+                <!-- Phim 2: Doraemon Đôi Bạn Thân Stand By Me -->
+                <div class="playlist-movie-item" onclick="playDirectStream(this, 'https://www.youtube-nocookie.com/embed/S263h0d5kXk?autoplay=1&rel=0', 'Doraemon: Đôi Bạn Thân (Stand By Me) 🐱🔔', '')">
+                    <div class="movie-item-poster">🐱🔔</div>
+                    <div class="movie-item-name">Doraemon: Đôi Bạn Thân</div>
+                    <div class="movie-item-genre" style="background: rgba(255, 183, 3, 0.35); color: #FFD700;">Cảm Động Tuổi Thơ</div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Thanh nút hành động nhanh cuối rạp -->
+        <div class="bottom-cinema-actions">
+            <button class="btn-action-pill" onclick="openConcessionModal()">
+                <span>🍿 Gọi Bắp & Nước Tận Ghế</span>
+            </button>
+            <button class="btn-action-pill btn-pill-purple" onclick="openTicketModal()">
+                <span>🎟️ Xem Tấm Vé VIP Đôi</span>
+            </button>
+            <a href="cuathanki.html" class="btn-action-pill btn-pill-door">
+                <span>🚪 Về Cánh Cửa Thần Kỳ</span>
+            </a>
+        </div>
+
+    </div>
+
+
+    <!-- ========================================================
+         MODAL 1: GỌI BẮP RANG BƠ & NƯỚC UỐNG TẬN GHẾ
+         ======================================================== -->
+    <div class="modal-overlay" id="concessionModal">
+        <div class="modal-card">
+            <div class="modal-title">🍿 Quầy Bắp Nước Rạp VIP</div>
+            <p class="modal-desc">Chọn món em muốn nhâm nhi, anh phục vụ sẽ tức tốc mang tới ghế ngồi cho em ngay! 🥰</p>
+
+            <div class="concession-section-label">🍿 1. Chọn vị bắp rang bơ:</div>
+            <div class="concession-chips-wrap" id="popcornGroup">
+                <div class="concession-chip selected" onclick="pickConcession(this, 'popcorn')">🧀 Phô mai béo ngậy</div>
+                <div class="concession-chip" onclick="pickConcession(this, 'popcorn')">🍯 Caramel giòn thơm</div>
+                <div class="concession-chip" onclick="pickConcession(this, 'popcorn')">🧈 Bơ ngọt truyền thống</div>
+                <div class="concession-chip" onclick="pickConcession(this, 'popcorn')">🍫 Socola ngọt ngào</div>
+            </div>
+
+            <div class="concession-section-label">🥤 2. Chọn đồ uống kèm theo:</div>
+            <div class="concession-chips-wrap" id="drinkGroup">
+                <div class="concession-chip selected" onclick="pickConcession(this, 'drink')">🧋 Trà sữa trân châu</div>
+                <div class="concession-chip" onclick="pickConcession(this, 'drink')">🥤 Coca-Cola mát lạnh</div>
+                <div class="concession-chip" onclick="pickConcession(this, 'drink')">🍑 Trà đào cam sả</div>
+                <div class="concession-chip" onclick="pickConcession(this, 'drink')">🍉 Nước ép dưa hấu</div>
+            </div>
+
+            <div class="concession-section-label">💌 3. Lời nhắn cho anh phục vụ:</div>
+            <textarea id="concessionMessage" class="concession-textarea" rows="2" placeholder="Ví dụ: Lấy nhiều phô mai cho em nha anh, vào ngồi cạnh em luôn nhé..."></textarea>
+
+            <div style="display: flex; gap: 10px; justify-content: center; margin-top: 1.5rem;">
+                <button class="btn-modal-dismiss" onclick="closeModals()">Để sau</button>
+                <button id="btnSendConcession" class="btn-modal-confirm" onclick="sendConcessionOrder()">Gọi Anh Mang Lên Ngay 🛵💨</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ========================================================
+         MODAL 2: TẤM VÉ XEM PHIM TÌNH YÊU (VIP TICKET)
+         ======================================================== -->
+    <div class="modal-overlay" id="ticketModal">
+        <div class="modal-card">
+            <div class="modal-title">🎟️ Vé Xem Phim Tình Yêu</div>
+            <p class="modal-desc">Tấm vé độc quyền có giá trị trọn đời tại Rạp Cửa Thần Kỳ!</p>
+
+            <div class="retro-ticket-view">
+                <div class="ticket-hole-left"></div>
+                <div class="ticket-hole-right"></div>
+
+                <div class="retro-ticket-header">
+                    <div class="ticket-logo-text">THAOBEO VIP CINEMA 🎬</div>
+                    <div class="ticket-badge-tag">SWEETBOX VIP</div>
+                </div>
+
+                <div class="ticket-info-row">
+                    <span class="ticket-field-label">Phim:</span>
+                    <span class="ticket-field-val" id="ticketMovieTitle">Minion Cắt Cỏ (Mower Minions) 🍌🌱</span>
+                </div>
+                <div class="ticket-info-row">
+                    <span class="ticket-field-label">Khách VIP:</span>
+                    <span class="ticket-field-val">Thảo Béo & Anh Người Yêu 🥰</span>
+                </div>
+                <div class="ticket-info-row">
+                    <span class="ticket-field-label">Suất chiếu:</span>
+                    <span class="ticket-field-val">Vĩnh Viễn (Mỗi Khi Em Thích)</span>
+                </div>
+                <div class="ticket-info-row">
+                    <span class="ticket-field-label">Ghế ngồi:</span>
+                    <span class="ticket-field-val" id="ticketSeatNumber" style="color: #FF80AB;">Sweetbox 01 - Luôn Ngồi Cạnh Nhau</span>
+                </div>
+                <div class="ticket-info-row">
+                    <span class="ticket-field-label">Combo Bắp Nước:</span>
+                    <span class="ticket-field-val" id="ticketComboSummary">Bắp Phô Mai + Trà Sữa</span>
+                </div>
+                <div class="ticket-info-row">
+                    <span class="ticket-field-label">Giá vé:</span>
+                    <span class="ticket-field-val" style="color: #FFD700;">Đã thanh toán bằng 1000 nụ hôn 💋</span>
+                </div>
+
+                <div class="ticket-barcode-lines">
+                    ||| | |||| | ||| |||| || |||
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button class="btn-modal-dismiss" onclick="closeModals()">Đóng</button>
+                <button class="btn-modal-confirm" onclick="saveTicketSweet()">Lưu Kỷ Niệm Này 💖</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ========================================================
+         MODAL 3: THÔNG BÁO GỌI BẮP NƯỚC THÀNH CÔNG
+         ======================================================== -->
+    <div class="modal-overlay" id="orderSuccessModal">
+        <div class="modal-card">
+            <div style="font-size: 3.5rem; margin-bottom: 0.5rem;">🍿🥤✨</div>
+            <div class="modal-title" style="color: #FF7518;">Đã Nhận Đơn Bắp Nước!</div>
+            <p style="color: #F5EEFD; font-size: 1.05rem; line-height: 1.6; margin: 1rem 0 1.5rem;">
+                Anh nghe lệnh rồi nha! Bắp thơm ngào ngạt và nước ngọt mát lạnh đang được anh mang tức tốc vào rạp cho công chúa Thảo Béo đây! Ngồi xem ngoan đợi anh xíu nhé 🥰
+            </p>
+            <button class="btn-modal-confirm" onclick="closeModals()">Dạ vâng yêu anh 🥰</button>
+        </div>
+    </div>
+
+
+    <!-- ========================================================
+         JAVASCRIPT
+         ======================================================== -->
+    <script>
+        const WEB3FORMS_ACCESS_KEY = "85772af0-4866-4aff-97ba-30d3c4b7345a";
+
+        // Web Audio Synthesizer
+        let audioCtx = null;
+        function getAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        // Âm thanh ghế rạp êm ái khi ngồi vào
+        function playSeatClickSound() {
+            try {
+                const ctx = getAudioContext();
+                const now = ctx.currentTime;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(320, now);
+                osc.frequency.exponentialRampToValueAtTime(160, now + 0.12);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.13);
+            } catch(e) {}
+        }
+
+        // Âm thanh chuông rạp "Ting ting"
+        function playChime() {
+            try {
+                const ctx = getAudioContext();
+                const now = ctx.currentTime;
+                [880, 1760].forEach(f => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(f, now);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.85);
+                });
+            } catch(e) {}
+        }
+
+        // ========================================================
+        // ĐIỀU KHIỂN ĐÈN RẠP & RÈM SÂN KHẤU
+        // ========================================================
+        let isLightsOff = false;
+        function toggleCinemaLighting() {
+            isLightsOff = !isLightsOff;
+            document.body.classList.toggle('lights-turned-off', isLightsOff);
+
+            const icon = document.getElementById('lightIcon');
+            const text = document.getElementById('lightText');
+            const btn = document.getElementById('btnToggleLights');
+
+            if (isLightsOff) {
+                icon.innerText = "🕯️";
+                text.innerText = "Bật Đèn Rạp";
+                btn.classList.add('active-light');
+            } else {
+                icon.innerText = "💡";
+                text.innerText = "Tắt Đèn Rạp";
+                btn.classList.remove('active-light');
+            }
+        }
+
+        function toggleCurtains() {
+            const frame = document.getElementById('screenFrame');
+            frame.classList.toggle('curtains-open');
+        }
+
+        // ========================================================
+        // TƯƠNG TÁC CHỌN GHẾ NGỒI XEM PHIM
+        // ========================================================
+        let currentSelectedSeat = "Sweetbox 01";
+
+        function selectCinemaSeat(element, seatCode) {
+            playSeatClickSound();
+            document.querySelectorAll('.cinema-seat').forEach(s => s.classList.remove('selected'));
+            element.classList.add('selected');
+            currentSelectedSeat = `Ghế ${seatCode}`;
+
+            document.getElementById('ticketSeatNumber').innerText = `${currentSelectedSeat} - Ngồi Cạnh Nhau`;
+
+            confetti({
+                particleCount: 35,
+                spread: 50,
+                origin: { y: 0.7 },
+                colors: ['#FFD700', '#FF4F81', '#FFF']
+            });
+        }
+
+        function selectSweetboxSeat() {
+            playSeatClickSound();
+            document.querySelectorAll('.cinema-seat').forEach(s => s.classList.remove('selected'));
+            currentSelectedSeat = "Sweetbox 01";
+            document.getElementById('ticketSeatNumber').innerText = "Sweetbox 01 - Ôm Nhau Xem Phim ❤️";
+
+            confetti({
+                particleCount: 50,
+                spread: 70,
+                origin: { y: 0.7 },
+                colors: ['#FF4F81', '#FFD700', '#FF7518']
+            });
+        }
+
+        // ========================================================
+        // BỘ CHỌN PHIM & TRÌNH CHIẾU TRỰC TIẾP MOTCHILL TRÊN MÀN HÌNH RẠP
+        // ========================================================
+        let currentMovieUrl = "https://player.phimapi.com/player/?url=https://s2.phim1280.tv/20231223/D9ipNTi4/index.m3u8";
+
+        // Danh bạ dự phòng các phim nổi tiếng Motchill (đảm bảo chạy 100% không bị nghẽn)
+        const KNOWN_MOTCHILL_STREAMS = {
+            "minion-cat-co": "https://player.phimapi.com/player/?url=https://s2.phim1280.tv/20231223/D9ipNTi4/index.m3u8",
+            "minions-more-volume-1": "https://player.phimapi.com/player/?url=https://s2.phim1280.tv/20231212/Q9wgVO18/index.m3u8",
+            "minions-su-troi-day-cua-gru": "https://player.phimapi.com/player/?url=https://s5.phim1280.tv/20250516/qGQRGvEB/index.m3u8",
+            "minions": "https://player.phimapi.com/player/?url=https://s5.phim1280.tv/20250516/iVpBkX9N/index.m3u8",
+            "ke-trom-mat-trang-4": "https://player.phimapi.com/player/?url=https://s5.phim1280.tv/20250516/nJYxo0kr/index.m3u8",
+            "ke-trom-mat-trang-3": "https://player.phimapi.com/player/?url=https://s5.phim1280.tv/20250516/3T2rcjnD/index.m3u8",
+            "ke-trom-mat-trang-2": "https://player.phimapi.com/player/?url=https://s5.phim1280.tv/20250516/hYxxMgTc/index.m3u8",
+            "ke-trom-mat-trang": "https://player.phimapi.com/player/?url=https://s5.phim1280.tv/20250516/SzGKrSUT/index.m3u8",
+            "doraemon-nobita-va-ban-giao-huong-dia-cau": "https://player.phimapi.com/player/?url=https://s4.phim1280.tv/20250521/aF909VX2/index.m3u8"
+        };
+
+        // Chuyển đổi giữa các Album phim
+        function switchAlbum(albumName) {
+            const tabMinions = document.getElementById('tabMinions');
+            const tabDoraemon = document.getElementById('tabDoraemon');
+            const gridMinions = document.getElementById('albumGridMinions');
+            const gridDoraemon = document.getElementById('albumGridDoraemon');
+
+            if (albumName === 'minions') {
+                if (tabMinions) tabMinions.classList.add('active');
+                if (tabDoraemon) tabDoraemon.classList.remove('active');
+                if (gridMinions) gridMinions.style.display = 'grid';
+                if (gridDoraemon) gridDoraemon.style.display = 'none';
+            } else if (albumName === 'doraemon') {
+                if (tabDoraemon) tabDoraemon.classList.add('active');
+                if (tabMinions) tabMinions.classList.remove('active');
+                if (gridMinions) gridMinions.style.display = 'none';
+                if (gridDoraemon) gridDoraemon.style.display = 'grid';
+            }
+        }
+
+        function showScreenLoader(show, text) {
+            const overlay = document.getElementById('screenLoaderOverlay');
+            const label = document.getElementById('screenLoaderText');
+            if (!overlay) return;
+            if (show) {
+                if (text && label) label.innerText = text;
+                overlay.style.display = 'flex';
+            } else {
+                overlay.style.display = 'none';
+            }
+        }
+
+        // Phát trực tiếp link phim vào màn hình rạp
+        function playDirectStream(cardElement, streamUrl, title, slug) {
+            currentMovieUrl = streamUrl;
+
+            // Đổi active card
+            if (cardElement) {
+                document.querySelectorAll('.playlist-movie-item').forEach(m => m.classList.remove('active-playing'));
+                cardElement.classList.add('active-playing');
+            }
+
+            document.getElementById('currentMovieName').innerText = title;
+            document.getElementById('ticketMovieTitle').innerText = title;
+
+            // Hiển thị hiệu ứng nạp cuộn phim
+            showScreenLoader(true, `Đang nạp cuộn phim "${title}" vào máy chiếu rạp...`);
+
+            const iframe = document.getElementById('theaterVideo');
+            iframe.src = streamUrl;
+
+            // Khi iframe load xong thì ẩn loading
+            iframe.onload = function() {
+                setTimeout(() => showScreenLoader(false), 400);
+            };
+            setTimeout(() => showScreenLoader(false), 1600);
+
+            // Mở rèm rạp
+            document.getElementById('screenFrame').classList.add('curtains-open');
+
+            // Cập nhật thông báo
+            const hintBox = document.getElementById('webMovieHint');
+            if (hintBox) {
+                hintBox.style.display = 'inline-flex';
+                hintBox.innerHTML = `<span>🍿</span> <span>Đang chiếu: <b>${title}</b>. Bấm Play trên màn hình để xem trọn vẹn 2-3 tiếng nhé!</span>`;
+            }
+
+            // Bắn pháo hoa rạp và cuộn lên màn hình
+            fireMovieConfetti();
+            document.querySelector('.screen-stage-area').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        // Tách slug từ link Motchill người dùng dán vào
+        function extractSlugFromUrl(url) {
+            if (!url) return "";
+            url = url.trim();
+
+            // Nếu người dùng dán link dạng https://motchiller.ws/phim/minion-cat-co-1703933077/tap-full
+            const matchPhim = url.match(/\/phim\/([^\/\?#]+)/);
+            if (matchPhim) {
+                let slug = matchPhim[1];
+                // Bỏ phần timestamp số dài ở đuôi ví dụ -1703933077
+                return slug.replace(/-\d{6,}$/, '');
+            }
+
+            // Nếu người dùng dán trực tiếp slug
+            let clean = url.replace(/^https?:\/\/[^\/]+\//, '').replace(/\/.*$/, '');
+            return clean.replace(/-\d{6,}$/, '');
+        }
+
+        // Tải phim từ link bất kỳ hoặc link Motchill
+        async function playCustomMovie() {
+            const input = document.getElementById('customVideoInput');
+            const rawUrl = input.value.trim();
+            if (!rawUrl) {
+                alert("Em chưa dán đường link phim nào kìa! Thử dán link phim từ Motchill (như https://motchiller.ws/phim/minion-cat-co-1703933077/tap-full) nhé!");
+                return;
+            }
+
+            // 1. Nếu là link YouTube
+            if (parseYouTubeUrl(rawUrl)) {
+                const videoId = parseYouTubeUrl(rawUrl);
+                playDirectStream(null, `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`, `Video YouTube Tuyển Chọn (${videoId}) 🎬`, '');
+                return;
+            }
+
+            // 2. Nếu đã là link player / m3u8 trực tiếp
+            if (rawUrl.includes("player.phimapi.com") || rawUrl.includes(".m3u8")) {
+                let finalEmbed = rawUrl;
+                if (rawUrl.includes(".m3u8") && !rawUrl.includes("player.phimapi.com")) {
+                    finalEmbed = `https://player.phimapi.com/player/?url=${encodeURIComponent(rawUrl)}`;
+                }
+                playDirectStream(null, finalEmbed, "Phim Trực Tiếp (Full HD 2-3h) 🎬", '');
+                return;
+            }
+
+            // 3. Nếu là link từ Motchill (hoặc link chứa slug phim)
+            const slug = extractSlugFromUrl(rawUrl);
+            showScreenLoader(true, "Đang kết nối kho phim Motchill lấy bản Full HD...");
+
+            // Kiểm tra trong danh bạ phim có sẵn trước
+            if (slug && KNOWN_MOTCHILL_STREAMS[slug]) {
+                const stream = KNOWN_MOTCHILL_STREAMS[slug];
+                playDirectStream(null, stream, `Phim Motchill: ${slug} (Full Chiếu Rạp) 🎬`, slug);
+                return;
+            }
+
+            // Gọi API PhimAPI của Motchill để lấy link stream trực tiếp
+            try {
+                let res = await fetch(`https://phimapi.com/phim/${slug}`);
+                let data = await res.json();
+
+                // Nếu không thấy thì thử với slug gốc
+                if ((!data || !data.movie || !data.episodes || data.episodes.length === 0)) {
+                    const rawMatch = rawUrl.match(/\/phim\/([^\/\?#]+)/);
+                    if (rawMatch && rawMatch[1] !== slug) {
+                        res = await fetch(`https://phimapi.com/phim/${rawMatch[1]}`);
+                        data = await res.json();
+                    }
+                }
+
+                if (data && data.episodes && data.episodes.length > 0) {
+                    const epData = data.episodes[0].server_data;
+                    const firstEp = epData[0];
+                    const embedUrl = firstEp.link_embed || `https://player.phimapi.com/player/?url=${encodeURIComponent(firstEp.link_m3u8)}`;
+                    const movieTitle = `${data.movie.name} (${data.movie.time || 'Bản Chiếu Rạp 2-3h'}) 🎬`;
+                    playDirectStream(null, embedUrl, movieTitle, slug);
+                    return;
+                }
+            } catch (err) {
+                console.warn("Không thể tải qua API PhimAPI, chuyển sang chế độ nhúng trực tiếp:", err);
+            }
+
+            // Nếu API không tìm được, fallback nhúng trực tiếp link
+            showScreenLoader(false);
+            playDirectStream(null, rawUrl, "Phim Motchill Em Dán Vào 🎬", slug);
+        }
+
+        function parseYouTubeUrl(url) {
+            const reg = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/)([^#&?]*).*/;
+            const match = url.match(reg);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+
+        function reloadCurrentMovie() {
+            const iframe = document.getElementById('theaterVideo');
+            if (iframe && iframe.src) {
+                showScreenLoader(true, "Đang tải lại cuộn phim...");
+                const s = iframe.src;
+                iframe.src = '';
+                setTimeout(() => {
+                    iframe.src = s;
+                    setTimeout(() => showScreenLoader(false), 500);
+                }, 200);
+            }
+        }
+
+        function toggleFullscreenScreen() {
+            const frame = document.getElementById('screenFrame');
+            if (!document.fullscreenElement) {
+                if (frame.requestFullscreen) frame.requestFullscreen();
+                else if (frame.webkitRequestFullscreen) frame.webkitRequestFullscreen();
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
+            }
+        }
+
+        function fireMovieConfetti() {
+            confetti({
+                particleCount: 50,
+                spread: 70,
+                origin: { y: 0.45 },
+                colors: ['#FF4F81', '#FFD700', '#FF7518', '#00F0FF']
+            });
+        }
+
+        // ========================================================
+        // GỌI BẮP NƯỚC QUA WEB3FORMS
+        // ========================================================
+        let selectedPopcorn = "🧀 Phô mai béo ngậy";
+        let selectedDrink = "🧋 Trà sữa trân châu";
+
+        function pickConcession(chip, type) {
+            if (type === 'popcorn') {
+                document.querySelectorAll('#popcornGroup .concession-chip').forEach(c => c.classList.remove('selected'));
+                chip.classList.add('selected');
+                selectedPopcorn = chip.innerText;
+            } else if (type === 'drink') {
+                document.querySelectorAll('#drinkGroup .concession-chip').forEach(c => c.classList.remove('selected'));
+                chip.classList.add('selected');
+                selectedDrink = chip.innerText;
+            }
+            document.getElementById('ticketComboSummary').innerText = `${selectedPopcorn} + ${selectedDrink}`;
+        }
+
+        function openConcessionModal() {
+            openModal('concessionModal');
+        }
+
+        function openTicketModal() {
+            openModal('ticketModal');
+        }
+
+        function sendConcessionOrder() {
+            const btn = document.getElementById('btnSendConcession');
+            const note = document.getElementById('concessionMessage').value.trim();
+            const originalText = btn.innerHTML;
+
+            btn.innerHTML = "Đang báo anh... ⏳";
+            btn.disabled = true;
+
+            const orderContent = `🍿 [THAOBEO CINEMA] EM YÊU GỌI BẮP NƯỚC!\n- Vị trí ghế: ${currentSelectedSeat}\n- Bắp: ${selectedPopcorn}\n- Đồ uống: ${selectedDrink}\n- Lời nhắn: ${note || "(Không có ghi chú thêm)"}`;
+
+            fetch("https://api.web3forms.com/submit", {
+                method: "POST",
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    access_key: WEB3FORMS_ACCESS_KEY,
+                    subject: "🍿 [THAOBEO CINEMA] EM YÊU GỌI BẮP NƯỚC TẬN GHẾ!",
+                    "Order_Bắp_Nước": orderContent,
+                    "Vị_trí_ghế": currentSelectedSeat,
+                    "Thời_gian": new Date().toLocaleString('vi-VN')
+                })
+            })
+            .then(res => res.json())
+            .then(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                closeModals();
+                playChime();
+                confetti({ particleCount: 80, spread: 80, origin: { y: 0.55 }, colors: ['#FF7518', '#FFB703', '#FF4F81'] });
+                setTimeout(() => openModal('orderSuccessModal'), 400);
+            })
+            .catch(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                closeModals();
+                playChime();
+                setTimeout(() => openModal('orderSuccessModal'), 400);
+            });
+        }
+
+        function saveTicketSweet() {
+            closeModals();
+            confetti({ particleCount: 70, spread: 80, origin: { y: 0.5 }, colors: ['#FF4F81', '#FFD700', '#FFF'] });
+            alert("Vé xem phim đã được lưu vào tim anh! Anh sẽ luôn đồng hành xem phim cùng béo 🥰🎬");
+        }
+
+        // ========================================================
+        // MODALS HELPERS
+        // ========================================================
+        function openModal(id) {
+            closeModals();
+            const el = document.getElementById(id);
+            if (el) el.classList.add('active');
+        }
+
+        function closeModals() {
+            document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
+        }
+
+        // ========================================================
+        // CANVAS HẠT BỤI ÁNH SÁNG MÁY CHIẾU
+        // ========================================================
+        (function initProjectorDust() {
+            const canvas = document.getElementById('dustCanvas');
+            const ctx = canvas.getContext('2d');
+            let width, height;
+            let particles = [];
+
+            function resize() {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = 450;
+                particles = [];
+                for (let i = 0; i < 45; i++) {
+                    particles.push({
+                        x: width * 0.25 + Math.random() * (width * 0.5),
+                        y: Math.random() * height,
+                        radius: Math.random() * 1.5 + 0.4,
+                        alpha: Math.random() * 0.6 + 0.2,
+                        speedY: Math.random() * 0.3 + 0.1,
+                        speedX: (Math.random() - 0.5) * 0.2
+                    });
+                }
+            }
+
+            function render() {
+                ctx.clearRect(0, 0, width, height);
+                for (let p of particles) {
+                    p.y += p.speedY;
+                    p.x += p.speedX;
+                    if (p.y > height) {
+                        p.y = 0;
+                        p.x = width * 0.25 + Math.random() * (width * 0.5);
+                    }
+
+                    ctx.save();
+                    ctx.fillStyle = "rgba(255, 235, 180, " + p.alpha + ")";
+                    ctx.shadowBlur = 4;
+                    ctx.shadowColor = "#FFD700";
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                }
+                requestAnimationFrame(render);
+            }
+
+            window.addEventListener('resize', resize);
+            resize();
+            render();
+        })();
+    </script>
+</body>
+</html>

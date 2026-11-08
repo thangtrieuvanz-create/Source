@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cửa Thần Kỳ Doraemon - Cổng Vào Rạp Chiếu Phim 🚪✨🎬</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Quicksand:wght@500;600;700;800&family=Comfortaa:wght@700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --door-pink: #FF4F81;
+            --door-pink-dark: #D81B60;
+            --door-pink-light: #FF80AB;
+            --door-frame: #FFF0F5;
+            --gold-knob: #FFD700;
+            --gold-knob-shadow: #B8860B;
+            --portal-glow: rgba(255, 79, 129, 0.6);
+            --portal-yellow: rgba(255, 215, 0, 0.5);
+            --bg-deep: #0a0414;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Quicksand', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            color: #FFF;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+            user-select: none;
+        }
+
+        /* Canvas hạt sao & mây ngân hà ma thuật */
+        #portalCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Container toàn bộ Cửa thần kỳ */
+        .portal-universe {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            perspective: 1500px;
+            transition: transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 1.2s ease;
+        }
+
+        /* Khi mở cửa và lao xuyên qua */
+        .portal-universe.warp-speed {
+            transform: scale(4.5) translateZ(400px);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Tiêu đề & Hướng dẫn */
+        .portal-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .portal-badge {
+            display: inline-block;
+            background: rgba(255, 79, 129, 0.2);
+            color: #FFB703;
+            border: 1px solid rgba(255, 215, 0, 0.5);
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            box-shadow: 0 0 15px rgba(255, 183, 3, 0.3);
+            margin-bottom: 0.8rem;
+        }
+
+        .portal-title {
+            font-family: 'Cinzel Decorative', cursive, sans-serif;
+            font-size: 2.4rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #FF80AB 0%, #FF4F81 50%, #FFD700 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(255, 79, 129, 0.6);
+            letter-spacing: 1px;
+        }
+
+        .portal-sub {
+            color: #E2D4F0;
+            font-size: 1.05rem;
+            margin-top: 0.5rem;
+            animation: pulseSub 2.2s infinite ease-in-out;
+        }
+
+        @keyframes pulseSub {
+            0%, 100% { opacity: 0.8; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.03); color: #FFD700; }
+        }
+
+        /* Khung 3D Cánh Cửa Thần Kỳ */
+        .door-container-3d {
+            position: relative;
+            width: 270px;
+            height: 450px;
+            perspective: 1200px;
+            cursor: pointer;
+            margin: 0.5rem 0 2rem;
+            transition: transform 0.3s ease;
+        }
+
+        .door-container-3d:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Hào quang ma thuật rực rỡ xung quanh cửa */
+        .door-aura {
+            position: absolute;
+            top: -30px;
+            left: -30px;
+            right: -30px;
+            bottom: -30px;
+            background: radial-gradient(circle, rgba(255, 79, 129, 0.45) 0%, rgba(255, 183, 3, 0.28) 50%, transparent 72%);
+            border-radius: 40px;
+            filter: blur(25px);
+            animation: pulseAura 3s infinite alternate ease-in-out;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        @keyframes pulseAura {
+            0% { transform: scale(0.95); opacity: 0.6; }
+            100% { transform: scale(1.08); opacity: 1; filter: blur(35px); }
+        }
+
+        /* Khung cửa màu kem trắng viền nổi */
+        .door-outer-frame {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 15px solid #FFF0F5;
+            border-bottom: 22px solid #E6D2D8;
+            border-radius: 14px 14px 0 0;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), 0 0 35px rgba(255, 79, 129, 0.5);
+            background: #150624;
+            box-sizing: border-box;
+            z-index: 2;
+            overflow: hidden;
+        }
+
+        /* Khung cảnh rạp chiếu phim lộ ra bên trong khi mở cửa */
+        .portal-view-inside {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 60%, #FFFFFF 0%, #FFD700 25%, #FF4F81 65%, #180028 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+            box-shadow: inset 0 0 50px rgba(255, 255, 255, 0.95);
+            z-index: 1;
+        }
+
+        .portal-view-inside .cinema-icon-peek {
+            font-size: 3.5rem;
+            animation: bouncePeek 1s infinite alternate ease-in-out;
+        }
+
+        @keyframes bouncePeek {
+            0% { transform: translateY(0) scale(1); }
+            100% { transform: translateY(-10px) scale(1.15); }
+        }
+
+        .portal-view-inside .portal-entering-text {
+            color: #2D0820;
+            font-weight: 800;
+            font-size: 0.95rem;
+            margin-top: 10px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        /* Cánh cửa màu hồng Doraemon (Xoay 3D) */
+        .door-panel-leaf {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, #FF6584 0%, #FF4F81 50%, #D81B60 100%);
+            border-radius: 2px;
+            transform-origin: left center;
+            transform-style: preserve-3d;
+            transition: transform 1.25s cubic-bezier(0.2, 0.85, 0.4, 1);
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3), 4px 0 15px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly;
+            padding: 22px 20px;
+            z-index: 3;
+        }
+
+        /* Các ô pano dập nổi trên mặt cửa Doraemon */
+        .door-molding {
+            width: 100%;
+            height: 42%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.16) 0%, rgba(0, 0, 0, 0.15) 100%);
+            border: 3px solid #FF80AB;
+            border-radius: 8px;
+            box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.25), 0 2px 5px rgba(255, 255, 255, 0.25);
+            position: relative;
+        }
+
+        .door-molding::after {
+            content: '';
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            right: 6px;
+            bottom: 6px;
+            border: 1.5px dashed rgba(255, 255, 255, 0.4);
+            border-radius: 4px;
+        }
+
+        /* Quả đấm cửa vàng hình cầu Doraemon */
+        .door-golden-knob {
+            position: absolute;
+            right: 22px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 35%, #FFF9C4 0%, #FFD700 55%, #B8860B 100%);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7), 0 0 15px rgba(255, 215, 0, 0.7);
+            cursor: pointer;
+            transition: transform 0.3s ease, filter 0.3s ease;
+            z-index: 5;
+        }
+
+        .door-golden-knob::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            width: 7px;
+            height: 7px;
+            background: #FFFFFF;
+            border-radius: 50%;
+            opacity: 0.9;
+        }
+
+        .door-golden-knob:hover {
+            transform: translateY(-50%) scale(1.18) rotate(15deg);
+            filter: drop-shadow(0 0 15px #FFD700);
+        }
+
+        /* Quả chuông Doraemon treo góc cửa */
+        .door-bell-pendant {
+            position: absolute;
+            top: -18px;
+            right: 22px;
+            font-size: 2rem;
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.6));
+            animation: ringBell 3s infinite ease-in-out;
+            z-index: 6;
+        }
+
+        @keyframes ringBell {
+            0%, 80%, 100% { transform: rotate(0); }
+            85% { transform: rotate(18deg); }
+            90% { transform: rotate(-18deg); }
+            95% { transform: rotate(12deg); }
+        }
+
+        /* Trạng thái khi cửa mở */
+        .door-container-3d.door-opened .door-panel-leaf {
+            transform: rotateY(-112deg);
+        }
+
+        .door-container-3d.door-opened .portal-view-inside {
+            opacity: 1;
+        }
+
+        /* Chân thềm cửa */
+        .door-bottom-threshold {
+            position: absolute;
+            bottom: -15px;
+            left: -18px;
+            width: calc(100% + 36px);
+            height: 18px;
+            background: linear-gradient(180deg, #D7CCC8 0%, #8D6E63 100%);
+            border-radius: 5px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.85);
+            z-index: 4;
+        }
+
+        /* Nút hành động */
+        .portal-actions-row {
+            display: flex;
+            gap: 1.2rem;
+            z-index: 10;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn-enter-cinema {
+            background: linear-gradient(135deg, #FF4F81 0%, #D81B60 100%);
+            color: #FFFFFF;
+            border: none;
+            padding: 1rem 2.2rem;
+            border-radius: 35px;
+            font-size: 1.15rem;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(255, 79, 129, 0.5), 0 0 15px rgba(255, 215, 0, 0.3);
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-enter-cinema:hover {
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 12px 35px rgba(255, 79, 129, 0.75), 0 0 25px rgba(255, 215, 0, 0.5);
+            background: linear-gradient(135deg, #FF6584 0%, #E91E63 100%);
+        }
+
+        .btn-back-home {
+            background: rgba(255, 255, 255, 0.12);
+            color: #E2D4F0;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            padding: 1rem 1.8rem;
+            border-radius: 35px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-back-home:hover {
+            background: rgba(255, 255, 255, 0.22);
+            color: #FFF;
+            transform: translateY(-3px);
+        }
+
+        /* Lớp phủ màn chiếu trắng khi xuyên không */
+        #warpFlashOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, #FFF 0%, #FFD700 35%, #FF4F81 70%, #0a0414 100%);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 999;
+            transition: opacity 0.8s ease;
+        }
+
+        #warpFlashOverlay.active {
+            opacity: 1;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-25px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Canvas hạt bụi ma thuật & sao lấp lánh -->
+    <canvas id="portalCanvas"></canvas>
+
+    <!-- Lớp phủ ánh sáng flash khi xuyên không -->
+    <div id="warpFlashOverlay"></div>
+
+    <div class="portal-universe" id="portalUniverse">
+        <div class="portal-header">
+            <div class="portal-badge">✨ Doraemon dokodemo door ✨</div>
+            <h1 class="portal-title">CÁNH CỬA THẦN KỲ</h1>
+            <p class="portal-sub">👉 Chạm vào quả đấm cửa để bước vào <strong>Rạp Chiếu Phim Bí Mật!</strong> 🎬🍿</p>
+        </div>
+
+        <!-- Khung Cửa Thần Kỳ 3D -->
+        <div class="door-container-3d" id="door3D" onclick="triggerOpenDoor()" title="Nhấn vào cánh cửa thần kỳ!">
+            <div class="door-aura"></div>
+            <div class="door-bell-pendant">🔔</div>
+
+            <div class="door-outer-frame">
+                <!-- Không gian rạp chiếu phim lộ ra bên trong cửa -->
+                <div class="portal-view-inside">
+                    <div class="cinema-icon-peek">🍿🎬✨</div>
+                    <div class="portal-entering-text">Đang Mở Rạp Chiếu Phim...</div>
+                </div>
+
+                <!-- Cánh cửa hồng Doraemon -->
+                <div class="door-panel-leaf" id="doorLeaf">
+                    <div class="door-molding"></div>
+                    <div class="door-molding"></div>
+                    
+                    <!-- Quả đấm tròn vàng đặc trưng Doraemon -->
+                    <div class="door-golden-knob" onclick="event.stopPropagation(); triggerOpenDoor();" title="Quả đấm cửa thần kỳ"></div>
+                </div>
+            </div>
+
+            <!-- Chân thềm cửa -->
+            <div class="door-bottom-threshold"></div>
+        </div>
+
+        <div class="portal-actions-row">
+            <button class="btn-enter-cinema" onclick="triggerOpenDoor()">
+                <span>Mở Cửa Vào Rạp</span> 🚪🍿
+            </button>
+            <a href="beobeobeo.html" class="btn-back-home">
+                <span>Về Trang Cứu Cánh</span> 💌
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Web Audio API Synthesizer (Âm thanh thần tiên Doraemon & tiếng cửa mở)
+        let audioCtx = null;
+        function getAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        function playKnobTurnSound() {
+            try {
+                const ctx = getAudioContext();
+                const now = ctx.currentTime;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(650, now);
+                osc.frequency.exponentialRampToValueAtTime(140, now + 0.09);
+                gain.gain.setValueAtTime(0.35, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.09);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.1);
+            } catch (e) {}
+        }
+
+        function playDoraemonPortalChime() {
+            try {
+                const ctx = getAudioContext();
+                const now = ctx.currentTime;
+                // Chuỗi nốt thần tiên Doraemon
+                const notes = [523.25, 659.25, 783.99, 987.77, 1046.50, 1318.51, 1567.98, 2093.00];
+                notes.forEach((freq, idx) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+                    gain.gain.setValueAtTime(0, now + idx * 0.08);
+                    gain.gain.linearRampToValueAtTime(0.2, now + idx * 0.08 + 0.03);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + 0.7);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now + idx * 0.08);
+                    osc.stop(now + idx * 0.08 + 0.75);
+                });
+            } catch (e) {}
+        }
+
+        let isOpening = false;
+
+        function triggerOpenDoor() {
+            if (isOpening) return;
+            isOpening = true;
+
+            playKnobTurnSound();
+            setTimeout(playDoraemonPortalChime, 150);
+
+            const door = document.getElementById('door3D');
+            const universe = document.getElementById('portalUniverse');
+            const flash = document.getElementById('warpFlashOverlay');
+
+            door.classList.add('door-opened');
+
+            // Pháo hoa giấy bung tỏa từ cánh cửa
+            confetti({
+                particleCount: 90,
+                spread: 85,
+                origin: { y: 0.55 },
+                colors: ['#FF4F81', '#FFD700', '#00F0FF', '#FFF', '#9D4EDD']
+            });
+
+            // Sau 0.9s: phóng to camera xuyên qua cánh cửa thần kỳ
+            setTimeout(() => {
+                universe.classList.add('warp-speed');
+                
+                // Sau 1.3s: flash sáng rực rỡ và chuyển hướng đến trang rạp chiếu phim
+                setTimeout(() => {
+                    flash.classList.add('active');
+                    setTimeout(() => {
+                        window.location.href = "rapchieuphim.html";
+                    }, 400);
+                }, 400);
+
+            }, 900);
+        }
+
+        // Bầu trời sao và bụi ánh sáng ngân hà ma thuật
+        (function initStars() {
+            const canvas = document.getElementById('portalCanvas');
+            const ctx = canvas.getContext('2d');
+            let width, height;
+            let stars = [];
+
+            function resize() {
+                width = canvas.width = window.innerWidth;
+                height = canvas.height = window.innerHeight;
+                stars = [];
+                const count = Math.floor((width * height) / 10000);
+                for (let i = 0; i < count; i++) {
+                    stars.push({
+                        x: Math.random() * width,
+                        y: Math.random() * height,
+                        radius: Math.random() * 1.6 + 0.5,
+                        alpha: Math.random() * 0.8 + 0.2,
+                        speed: Math.random() * 0.02 + 0.005,
+                        color: ['#FF80AB', '#FFD700', '#00F0FF', '#FFFFFF', '#9D4EDD', '#FF4F81'][Math.floor(Math.random() * 6)]
+                    });
+                }
+            }
+
+            function render() {
+                ctx.clearRect(0, 0, width, height);
+                for (let s of stars) {
+                    s.alpha += Math.sin(Date.now() * s.speed) * 0.015;
+                    ctx.save();
+                    ctx.globalAlpha = Math.max(0.1, Math.min(1, s.alpha));
+                    ctx.fillStyle = s.color;
+                    ctx.beginPath();
+                    ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                }
+                requestAnimationFrame(render);
+            }
+
+            window.addEventListener('resize', resize);
+            resize();
+            render();
+        })();
+    </script>
+</body>
+</html>
+
